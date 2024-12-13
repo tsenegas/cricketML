@@ -1,0 +1,86 @@
+---
+title: "Scalable IT Architecture"
+format: html
+---
+
+# 1. Data Storage and Ingestion
+
+-   Amazon S3:
+    -   Use S3 buckets to store raw high-frame-rate spatial-temporal data.
+    -   Separate folders for raw data, pre-processed data, and model artifacts.
+-   AWS Glue:
+    -   Automate the ETL process to clean and transform data for model training and inference.
+    -   Glue can handle the scale of data for multiple seasons and ensure structured data pipelines.
+
+## 2. Model Training
+
+-   Amazon SageMaker:
+    -   Train models using SageMaker's built-in resources.
+    -   Use a dedicated instance with 8 cores and large memory for the 8-hour training sessions.
+    -   Store training metrics and artifacts in S3.
+
+## 3. Model Prediction
+
+-   AWS Batch:
+    -   Schedule batch jobs for overnight predictions (50 games/day).
+    -   Each game prediction requires a single CPU and 4 GB of memory for 60 minutes.
+    -   Use Compute Environment configurations to scale EC2 resources for optimal cost-efficiency.
+
+## 4. Data Warehouse:
+
+-   Snowflake:
+    -   Store structured data (aggregated predictions, historical data) for analytical queries.
+    -   ntegration with S3 for seamless data loading and querying.
+
+## 5. MLOps and Model Monitoring
+
+-   Amazon CloudWatch:
+    -   Monitor training and prediction jobs.
+    -   Set up alarms for model performance degradation.
+-   SageMaker Model Monitor:
+    -   Track model performance metrics (e.g., prediction accuracy, latency) and data drift.
+
+## 6. Visualization and Reporting
+
+-   R Shiny or Streamlit:
+    -   Deploy a visualization app to present model outputs, trends, and performance metrics.
+    -   Host the app using a dockerized solution (shinyproxy works nicely)
+
+## 7. Orchestration
+
+-   Apache Airflow (Managed on AWS MWAA - Managed Workflows for Apache Airflow):
+    -   Schedule and monitor workflows for ETL, model training, and predictions.
+    -   Integrate with S3, Snowflake and SageMaker for seamless pipeline execution.
+
+## 8. Scalability and Security
+
+-   Auto-Scaling Groups:
+    -   Dynamically scale EC2 instances based on workload for cost management.
+-   IAM Roles:
+    -   Manage access and permissions across AWS services to ensure data security.
+-   VPC:
+    -   Deploy services in a private network for enhanced security.
+
+# Service Interaction Diagram Components:
+
+\- Input: Raw Data (S3) → Preprocessing (Glue)
+
+\- Training: Preprocessed Data (Glue/S3) → SageMaker
+
+\- Inference: Raw Data (S3) → Batch Jobs (AWS Batch)
+
+\- Storage: Predictions (S3 → Snowflake)
+
+\- Visualization: Dashboards (Streamlit/R Shiny)
+
+\- Monitoring: CloudWatch, SageMaker Model Monitor
+
+\- Orchestration: Airflow (MWAA)
+
+```{css}
+[Data Sources] → [S3] → [Glue] → [SageMaker (Training)] → [S3/Snowflake]
+                            ↓                        ↘
+                         [AWS Batch (Inference)]     ↘
+                              ↓                       ↘
+                        [S3/Snowflake] → [Visualization (Streamlit)]
+```
