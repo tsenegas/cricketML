@@ -31,3 +31,21 @@ For a detailed view of the architecture with listed services associated, check t
 
 
 # Part II: Model Pipelines and Deployment
+
+## Question 2
+
+I rate my knowledge of cricket at 1. I basicly never seen or read anything related to cricket.
+
+## Question 3.a
+
+Here are my intermediate data after first cleaning :
+
+- [Intermediate data, in csv]()
+
+You can show in details my code to went from raw data to that dataset [here]()
+
+## Question 3.b
+
+A basic ML model to predict an average team's expected runs per over, [code]()
+
+## Question 4
