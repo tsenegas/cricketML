@@ -1,0 +1,42 @@
+# Load required libraries
+library(tidymodels)
+library(dplyr)
+
+# Select relevant columns
+model_data <- processed_data %>%
+  select(remaining_overs, remaining_wickets, runs.total)
+
+# Split the data into training and testing sets
+set.seed(123)  # For reproducibility
+data_split <- initial_split(model_data, prop = 0.8)
+train_data <- training(data_split)
+test_data <- testing(data_split)
+
+# Define a linear regression model specification
+lm_spec <- linear_reg() %>%
+  set_engine("lm") %>%
+  set_mode("regression")
+
+# Create a recipe for preprocessing (no preprocessing needed here, but good practice)
+lm_recipe <- recipe(runs.total ~ remaining_overs + remaining_wickets, data = train_data)
+
+# Create a workflow combining the recipe and model
+lm_workflow <- workflow() %>%
+  add_recipe(lm_recipe) %>%
+  add_model(lm_spec)
+
+# Fit the model on the training data
+lm_fit <- lm_workflow %>%
+  fit(data = train_data)
+
+# Evaluate the model on the test data
+test_results <- lm_fit %>%
+  predict(test_data) %>%
+  bind_cols(test_data) %>%
+  metrics(truth = runs.total, estimate = .pred)
+
+# Print evaluation metrics
+print(test_results)
+
+# Save the model to disk for deployment
+saveRDS(lm_fit, "simple_cricket_model.rds")

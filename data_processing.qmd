@@ -1,6 +1,41 @@
----
 
----
-title: "Data processing"
+title: "Q3b. Pre-processing data
 format: html
 ---
+
+
+```{r}
+# Load required libraries
+library(dplyr)
+library(jsonlite)
+
+# Read raw Json files
+match_data = jsonlite::fromJSON('./data/match_results.json')
+innings_data = jsonlite::fromJSON('../../cricketML_data/innings_results.json')
+
+
+# Process the data for Q3a
+# Step 1: Filter out no-result matches
+valid_match_ids <- match_data |> 
+  dplyr::filter(is.na(result) | result == 'tie') |> 
+  dplyr::pull(matchid) |> 
+  unique()
+
+# Step 2: Filter innings data to include only valid matches
+filtered_innings <- innings_data |> 
+  dplyr::filter(matchid %in% valid_match_ids)
+
+# Step 3: Add remaining overs and remaining wickets
+processed_data <- merged_data |> 
+  group_by(matchid, innings) |> 
+  mutate(
+    remaining_overs = 50 - floor(as.numeric(over)),
+    cumulative_wickets = cumsum(ifelse(runs.total == 0 & !is.na(over), 1, 0)), # Simplified wicket calculation
+    remaining_wickets = 10 - cumulative_wickets
+  ) |> 
+  ungroup() |> 
+  select(matchid, team, innings, remaining_overs, remaining_wickets, runs.total)
+
+# Save as csv
+write_csv(processed_data, "processed_cricket_data.csv", row.names=F)
+```
