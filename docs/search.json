@@ -1,0 +1,142 @@
+[
+  {
+    "objectID": "deployment.html",
+    "href": "deployment.html",
+    "title": "question4",
+    "section": "",
+    "text": "Download docker image .tar\nOpen a Terminal Navigate to the directory where cricket_model.tar is located\n\ncd /path/to/cricket_model.tarcd /path/to/cricket_model.tar"
+  },
+  {
+    "objectID": "data_modelling.html",
+    "href": "data_modelling.html",
+    "title": "Data Modelling",
+    "section": "",
+    "text": "# Load required libraries\nlibrary(tidymodels)\nlibrary(dplyr)\nlibrary(readr)\n\n\n# Function: Prepare data for modeling\nprepare_data &lt;- function(data_path, split_ratio = 0.8) {\n  # Load processed data\n  processed_data &lt;- read_csv(data_path)\n  \n  # Select relevant columns\n  model_data &lt;- processed_data |&gt; \n    select(remaining_overs, remaining_wickets, runs.total)\n  \n  # Split the data into training and testing sets\n  set.seed(123)  # For reproducibility\n  data_split &lt;- initial_split(model_data, prop = split_ratio)\n  \n  list(train_data = training(data_split), test_data = testing(data_split))\n}\n\n# Function: Train the model\ntrain_model &lt;- function(train_data) {\n  # Define a linear regression model specification\n  lm_spec &lt;- linear_reg() |&gt; \n    set_engine(\"lm\") |&gt; \n    set_mode(\"regression\")\n  \n  # Create a recipe for preprocessing\n  lm_recipe &lt;- recipe(runs.total ~ remaining_overs + remaining_wickets, data = train_data)\n  \n  # Create a workflow combining the recipe and model\n  lm_workflow &lt;- workflow() |&gt; \n    add_recipe(lm_recipe) |&gt; \n    add_model(lm_spec)\n  \n  # Fit the model on the training data\n  lm_fit &lt;- lm_workflow |&gt; \n    fit(data = train_data)\n  \n  return(lm_fit)\n}\n\n# Function: Evaluate the model\nevaluate_model &lt;- function(model, test_data) {\n  test_results &lt;- model |&gt; \n    predict(test_data) |&gt; \n    bind_cols(test_data) |&gt; \n    metrics(truth = runs.total, estimate = .pred)\n  \n  return(test_results)\n}\n\n# Function: Save the model to disk\nsave_model &lt;- function(model, output_path) {\n  saveRDS(model, file = output_path)\n}\n\n# Main script logic\ndata_path &lt;- \"../data/processed_cricket_data.csv\"  # Path to processed data\nmodel_output_path &lt;- \"../model/simple_cricket_model.rds\"  # Model save path\n\n# Step 1: Prepare data\ndata_splits &lt;- prepare_data(data_path)\ntrain_data &lt;- data_splits$train_data\ntest_data &lt;- data_splits$test_data\n\n# Step 2: Train the model\nlm_fit &lt;- train_model(train_data)\n\n# Step 3: Evaluate the model\ntest_results &lt;- evaluate_model(lm_fit, test_data)\nprint(test_results)\n\n# Step 4: Save the model\nsave_model(lm_fit, model_output_path)"
+  },
+  {
+    "objectID": "about.html",
+    "href": "about.html",
+    "title": "About me",
+    "section": "",
+    "text": "I’m Thibault Senegas, a self-taught programmer and expert in R and Shiny. As a Lead Data Scientist and Chief Product Owner at quantum simulations*, I lead the creation of digital twins for companies, sports teams, and geographical regions. My focus is on merging cutting-edge data science with real-world applications.\nI hold an M.Sc. in International Business from HEC Montréal and a Master’s degree in Engineering from INP/ENSIACET in Toulouse, France. Before joining quantum simulations*, I honed my skills as a Data Scientist at IBM in their Advanced Analytics practice.\nI currently reside in Montréal, QC, with my wife and two sons.\nMy Resume"
+  },
+  {
+    "objectID": "architecture.html",
+    "href": "architecture.html",
+    "title": "Scalable IT Architecture",
+    "section": "",
+    "text": "Amazon S3:\n\nUse S3 buckets to store raw high-frame-rate spatial-temporal data.\nSeparate folders for raw data, pre-processed data, and model artifacts.\n\nAWS Glue:\n\nAutomate the ETL process to clean and transform data for model training and inference.\nGlue can handle the scale of data for multiple seasons and ensure structured data pipelines.\n\n\n\n\n\nAmazon SageMaker:\n\nTrain models using SageMaker’s built-in resources.\nUse a dedicated instance with 8 cores and large memory for the 8-hour training sessions.\nStore training metrics and artifacts in S3.\n\n\n\n\n\n\nAWS Batch:\n\nSchedule batch jobs for overnight predictions (50 games/day).\nEach game prediction requires a single CPU and 4 GB of memory for 60 minutes.\nUse Compute Environment configurations to scale EC2 resources for optimal cost-efficiency.\n\n\n\n\n\n\nSnowflake:\n\nStore structured data (aggregated predictions, historical data) for analytical queries.\nntegration with S3 for seamless data loading and querying.\n\n\n\n\n\n\nAmazon CloudWatch:\n\nMonitor training and prediction jobs.\nSet up alarms for model performance degradation.\n\nSageMaker Model Monitor:\n\nTrack model performance metrics (e.g., prediction accuracy, latency) and data drift.\n\n\n\n\n\n\nR Shiny or Streamlit:\n\nDeploy a visualization app to present model outputs, trends, and performance metrics.\nHost the app using a dockerized solution (shinyproxy works nicely)\n\n\n\n\n\n\nApache Airflow (Managed on AWS MWAA - Managed Workflows for Apache Airflow):\n\nSchedule and monitor workflows for ETL, model training, and predictions.\nIntegrate with S3, Snowflake and SageMaker for seamless pipeline execution.\n\n\n\n\n\n\nAuto-Scaling Groups:\n\nDynamically scale EC2 instances based on workload for cost management.\n\nIAM Roles:\n\nManage access and permissions across AWS services to ensure data security.\n\nVPC:\n\nDeploy services in a private network for enhanced security."
+  },
+  {
+    "objectID": "architecture.html#model-training",
+    "href": "architecture.html#model-training",
+    "title": "Scalable IT Architecture",
+    "section": "",
+    "text": "Amazon SageMaker:\n\nTrain models using SageMaker’s built-in resources.\nUse a dedicated instance with 8 cores and large memory for the 8-hour training sessions.\nStore training metrics and artifacts in S3."
+  },
+  {
+    "objectID": "architecture.html#model-prediction",
+    "href": "architecture.html#model-prediction",
+    "title": "Scalable IT Architecture",
+    "section": "",
+    "text": "AWS Batch:\n\nSchedule batch jobs for overnight predictions (50 games/day).\nEach game prediction requires a single CPU and 4 GB of memory for 60 minutes.\nUse Compute Environment configurations to scale EC2 resources for optimal cost-efficiency."
+  },
+  {
+    "objectID": "architecture.html#data-warehouse",
+    "href": "architecture.html#data-warehouse",
+    "title": "Scalable IT Architecture",
+    "section": "",
+    "text": "Snowflake:\n\nStore structured data (aggregated predictions, historical data) for analytical queries.\nntegration with S3 for seamless data loading and querying."
+  },
+  {
+    "objectID": "architecture.html#mlops-and-model-monitoring",
+    "href": "architecture.html#mlops-and-model-monitoring",
+    "title": "Scalable IT Architecture",
+    "section": "",
+    "text": "Amazon CloudWatch:\n\nMonitor training and prediction jobs.\nSet up alarms for model performance degradation.\n\nSageMaker Model Monitor:\n\nTrack model performance metrics (e.g., prediction accuracy, latency) and data drift."
+  },
+  {
+    "objectID": "architecture.html#visualization-and-reporting",
+    "href": "architecture.html#visualization-and-reporting",
+    "title": "Scalable IT Architecture",
+    "section": "",
+    "text": "R Shiny or Streamlit:\n\nDeploy a visualization app to present model outputs, trends, and performance metrics.\nHost the app using a dockerized solution (shinyproxy works nicely)"
+  },
+  {
+    "objectID": "architecture.html#orchestration",
+    "href": "architecture.html#orchestration",
+    "title": "Scalable IT Architecture",
+    "section": "",
+    "text": "Apache Airflow (Managed on AWS MWAA - Managed Workflows for Apache Airflow):\n\nSchedule and monitor workflows for ETL, model training, and predictions.\nIntegrate with S3, Snowflake and SageMaker for seamless pipeline execution."
+  },
+  {
+    "objectID": "architecture.html#scalability-and-security",
+    "href": "architecture.html#scalability-and-security",
+    "title": "Scalable IT Architecture",
+    "section": "",
+    "text": "Auto-Scaling Groups:\n\nDynamically scale EC2 instances based on workload for cost management.\n\nIAM Roles:\n\nManage access and permissions across AWS services to ensure data security.\n\nVPC:\n\nDeploy services in a private network for enhanced security."
+  },
+  {
+    "objectID": "data_processing.html",
+    "href": "data_processing.html",
+    "title": "Data Processing",
+    "section": "",
+    "text": "# Load required libraries\nlibrary(dplyr)\nlibrary(jsonlite)\n\n# Read raw Json files\nmatch_data = jsonlite::fromJSON('./data/match_results.json')\ninnings_data = jsonlite::fromJSON('../../cricketML_data/innings_results.json')\n\n# Process the data for Q3a\n# Step 1: Filter out no-result matches\nvalid_match_ids &lt;- match_data |&gt; \n  dplyr::filter(is.na(result) | result == 'tie') |&gt; \n  dplyr::pull(matchid) |&gt; \n  unique()\n\n# Step 2: Filter innings data to include only valid matches\nfiltered_innings &lt;- innings_data |&gt; \n  dplyr::filter(matchid %in% valid_match_ids)\n\n# Step 3: Add remaining overs and remaining wickets\nprocessed_innings &lt;- filtered_innings |&gt; \n  group_by(matchid, team) |&gt; \n  mutate(\n    over_number = floor(as.numeric(over)), # Extract the integer part of over (e.g., 0.1 becomes 0)\n    remaining_overs = 50 - over_number, # Calculate remaining overs (assuming 50 overs max)\n    remaining_wickets = 10 - cumsum(!is.na(wicket.player_out)), # Count dismissals cumulatively\n    inning_order = innings # Keep innings column for clarity\n  ) |&gt; \n  select(team, inning_order, remaining_overs, remaining_wickets, matchid)\n\nwrite.csv(processed_innings, \"data/processed_innings.csv\", row.names = FALSE)"
+  },
+  {
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "cricketML",
+    "section": "",
+    "text": "This project showcases my technical and analytical skills through the completion of a comprehensive data science assessment provided by Zelus Analytics. The assessment focuses on modeling, infrastructure design, and deployment, using ball-by-ball data from professional cricket matches.\n\n\n\nInfrastructure Design: Develop a scalable architecture for deploying a predictive model that processes high-frequency temporal data at scale.\nData Preparation and Modeling: Create a dataset from match data and develop a basic predictive model for expected runs per over in cricket matches.\nDeployment and Testing: Package the model in a cross-platform, reproducible environment using Docker, and implement unit testing for robustness.\n\n\n\n\n\nScalable Architecture: Designed a cloud-based pipeline to process ~1 GB of high-frame-rate data per game, addressing storage, computation, and prediction delivery at scale.\nPredictive Modeling: Built a streamlined model pipeline using run and wicket data to predict performance metrics, emphasizing reproducibility and interpretability.\nReproducible Deployment: Leveraged containerization to ensure cross-platform usability, along with CLI tools for local execution.\nQuality Assurance: Developed unit tests to validate model training and prediction, ensuring reliability under varied conditions.\n\nThis work demonstrates my ability to design end-to-end data solutions, leveraging my expertise in modeling, scalable system architecture, and reproducible deployment. The methodology and results are detailed throughout this site to provide transparency and insight into my problem-solving approach"
+  },
+  {
+    "objectID": "index.html#key-objectives",
+    "href": "index.html#key-objectives",
+    "title": "cricketML",
+    "section": "",
+    "text": "Infrastructure Design: Develop a scalable architecture for deploying a predictive model that processes high-frequency temporal data at scale.\nData Preparation and Modeling: Create a dataset from match data and develop a basic predictive model for expected runs per over in cricket matches.\nDeployment and Testing: Package the model in a cross-platform, reproducible environment using Docker, and implement unit testing for robustness."
+  },
+  {
+    "objectID": "index.html#highlights",
+    "href": "index.html#highlights",
+    "title": "cricketML",
+    "section": "",
+    "text": "Scalable Architecture: Designed a cloud-based pipeline to process ~1 GB of high-frame-rate data per game, addressing storage, computation, and prediction delivery at scale.\nPredictive Modeling: Built a streamlined model pipeline using run and wicket data to predict performance metrics, emphasizing reproducibility and interpretability.\nReproducible Deployment: Leveraged containerization to ensure cross-platform usability, along with CLI tools for local execution.\nQuality Assurance: Developed unit tests to validate model training and prediction, ensuring reliability under varied conditions.\n\nThis work demonstrates my ability to design end-to-end data solutions, leveraging my expertise in modeling, scalable system architecture, and reproducible deployment. The methodology and results are detailed throughout this site to provide transparency and insight into my problem-solving approach"
+  },
+  {
+    "objectID": "index.html#question-2",
+    "href": "index.html#question-2",
+    "title": "cricketML",
+    "section": "Question 2",
+    "text": "Question 2\nI rate my knowledge of cricket at 1. I basicly never seen or read anything related to cricket."
+  },
+  {
+    "objectID": "index.html#question-3.a",
+    "href": "index.html#question-3.a",
+    "title": "cricketML",
+    "section": "Question 3.a",
+    "text": "Question 3.a\nHere are my intermediate data after first cleaning :\n\nIntermediate data, in csv\n\nYou can show in details my code to went from raw data to that dataset here"
+  },
+  {
+    "objectID": "index.html#question-3.b",
+    "href": "index.html#question-3.b",
+    "title": "cricketML",
+    "section": "Question 3.b",
+    "text": "Question 3.b\nA basic ML model to predict an average team’s expected runs per over, code"
+  },
+  {
+    "objectID": "index.html#question-4",
+    "href": "index.html#question-4",
+    "title": "cricketML",
+    "section": "Question 4",
+    "text": "Question 4\nYou can download the docker of image there [here]().\nSee the page for the explanations step by steps"
+  },
+  {
+    "objectID": "index.html#question-5",
+    "href": "index.html#question-5",
+    "title": "cricketML",
+    "section": "Question 5",
+    "text": "Question 5"
+  }
+]

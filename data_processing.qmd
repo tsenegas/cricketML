@@ -1,6 +1,9 @@
-title: "Q3b. Pre-processing data format: html ---
+---
+title: "Data Processing"
+format: html
+---
 
-```{r}
+```{r eval = FALSE}
 # Load required libraries
 library(dplyr)
 library(jsonlite)

@@ -8,6 +8,14 @@ website:
     left:
       - href: index.qmd
         text: Home
+      - href: data_processing.qmd
+        text: Data Processing (Q3a) 
+      - href: data_modelling.qmd
+        text: Data Modelling (Q3b)
+      - href: deployment.qmd
+        text: Deployment (Q4)   
+      - href: unit_test.qmd
+        text: Unit Tests (Q5)    
     right:
       - about.qmd
             

@@ -27,7 +27,7 @@ In the first part, we present and describe the IT Infrastructure to deploy and m
 
 For a detailed view of the architecture with listed services associated, check the following page:
 
--   [IT Architecture]()
+-   [IT Architecture](architecture.html)
 
 # Part II: Model Pipelines and Deployment
 
