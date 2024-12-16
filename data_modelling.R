@@ -39,4 +39,4 @@ test_results <- lm_fit %>%
 print(test_results)
 
 # Save the model to disk for deployment
-saveRDS(lm_fit, "simple_cricket_model.rds")
+saveRDS(lm_fit, "./model/simple_cricket_model.rds")

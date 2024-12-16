@@ -1,17 +1,3 @@
-
-#test = jsonlite::fromJSON('./data/match_results.json')
-#test2 =jsonlite::fromJSON('../../cricketML_data/innings_results.json')
-
-
-#sample_innings_results = head(test2, 2000)
-#sample_match_results = head(test,2000)
-
-#write.csv(sample_match_results, '../../cricketML_data/sample_match_results.csv', row.names = F)
-#write.csv(sample_innings_results, '../../cricketML_data/sample_innings_results.csv', row.names = F)
-
-#testouille = read.csv('../../cricketML_data/sample_innings_results.csv')
-
-
 # Load required libraries
 library(dplyr)
 library(jsonlite)
@@ -41,18 +27,6 @@ processed_innings <- filtered_innings |>
     inning_order = innings # Keep innings column for clarity
   ) |> 
   select(team, inning_order, remaining_overs, remaining_wickets, matchid)
-
-
-#processed_data <- merged_data |> 
-#  group_by(matchid, innings) |> 
-#  mutate(
-#    remaining_overs = 50 - floor(as.numeric(over)),
-#    cumulative_wickets = cumsum(ifelse(runs.total == 0 & !is.na(over), 1, 0)), # Simplified wicket calculation
-#    remaining_wickets = 10 - cumulative_wickets
-#  ) |> 
-#  ungroup() |> 
-#  select(matchid, team, innings, remaining_overs, remaining_wickets, runs.total)
-
 
 write.csv(processed_innings, "data/processed_innings.csv", row.names = FALSE)
 

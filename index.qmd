@@ -7,18 +7,19 @@ title: "cricketML"
 This project showcases my technical and analytical skills through the completion of a comprehensive data science assessment provided by Zelus Analytics. The assessment focuses on modeling, infrastructure design, and deployment, using ball-by-ball data from professional cricket matches.
 
 ## Key Objectives
-1. Infrastructure Design: Develop a scalable architecture for deploying a predictive model that processes high-frequency temporal data at scale.
-2. Data Preparation and Modeling: Create a dataset from match data and develop a basic predictive model for expected runs per over in cricket matches.
-3. Deployment and Testing: Package the model in a cross-platform, reproducible environment using Docker, and implement unit testing for robustness.
+
+1.  Infrastructure Design: Develop a scalable architecture for deploying a predictive model that processes high-frequency temporal data at scale.
+2.  Data Preparation and Modeling: Create a dataset from match data and develop a basic predictive model for expected runs per over in cricket matches.
+3.  Deployment and Testing: Package the model in a cross-platform, reproducible environment using Docker, and implement unit testing for robustness.
 
 ## Highlights
-- **Scalable Architecture**: Designed a cloud-based pipeline to process ~1 GB of high-frame-rate data per game, addressing storage, computation, and prediction delivery at scale.
-- **Predictive Modeling**: Built a streamlined model pipeline using run and wicket data to predict performance metrics, emphasizing reproducibility and interpretability.
-- **Reproducible Deployment**: Leveraged containerization to ensure cross-platform usability, along with CLI tools for local execution.
-- **Quality Assurance**: Developed unit tests to validate model training and prediction, ensuring reliability under varied conditions.
+
+-   **Scalable Architecture**: Designed a cloud-based pipeline to process \~1 GB of high-frame-rate data per game, addressing storage, computation, and prediction delivery at scale.
+-   **Predictive Modeling**: Built a streamlined model pipeline using run and wicket data to predict performance metrics, emphasizing reproducibility and interpretability.
+-   **Reproducible Deployment**: Leveraged containerization to ensure cross-platform usability, along with CLI tools for local execution.
+-   **Quality Assurance**: Developed unit tests to validate model training and prediction, ensuring reliability under varied conditions.
 
 This work demonstrates my ability to design end-to-end data solutions, leveraging my expertise in modeling, scalable system architecture, and reproducible deployment. The methodology and results are detailed throughout this site to provide transparency and insight into my problem-solving approach
-
 
 # Part I: Infrastructure
 
@@ -26,9 +27,7 @@ In the first part, we present and describe the IT Infrastructure to deploy and m
 
 For a detailed view of the architecture with listed services associated, check the following page:
 
-- [IT Architecture]()
-
-
+-   [IT Architecture]()
 
 # Part II: Model Pipelines and Deployment
 
@@ -40,7 +39,7 @@ I rate my knowledge of cricket at 1. I basicly never seen or read anything relat
 
 Here are my intermediate data after first cleaning :
 
-- [Intermediate data, in csv]()
+-   [Intermediate data, in csv]()
 
 You can show in details my code to went from raw data to that dataset [here]()
 
@@ -49,3 +48,9 @@ You can show in details my code to went from raw data to that dataset [here]()
 A basic ML model to predict an average team's expected runs per over, [code]()
 
 ## Question 4
+
+You can download the docker of image there \[here\]().
+
+See the page for the explanations step by steps
+
+## Question 5

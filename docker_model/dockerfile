@@ -1,0 +1,37 @@
+# Use the official R base image
+FROM r-base:4.3.0
+
+# Install bash and required system dependencies
+RUN apt-get update && apt-get install -y \
+    bash \
+    libcurl4-openssl-dev \
+    libssl-dev \
+    libxml2-dev \
+    libfreetype6-dev \
+    libfontconfig1-dev \
+    libpng-dev \
+    libtiff5-dev \
+    libjpeg-dev \
+    build-essential \
+    gfortran \
+    pkg-config
+
+
+# Install required R packages
+RUN R -e "install.packages(c('dplyr', 'tidymodels', 'readr'), repos='https://cloud.r-project.org/')"
+
+
+# Set the working directory
+WORKDIR /app
+
+# Copy files into the container
+COPY run_predictions.sh /app/
+COPY predict_cricket.R /app/
+COPY simple_cricket_model.rds /app/
+COPY processed_cricket_data.csv /app/
+
+# Make the shell script executable
+RUN chmod +x /app/run_predictions.sh
+
+# Specify the command to run the script
+CMD ["/bin/bash", "-c", "./run_predictions.sh"]

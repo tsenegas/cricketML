@@ -1,8 +1,4 @@
-
-title: "Q3b. Pre-processing data
-format: html
----
-
+title: "Q3b. Pre-processing data format: html ---
 
 ```{r}
 # Load required libraries
@@ -12,7 +8,6 @@ library(jsonlite)
 # Read raw Json files
 match_data = jsonlite::fromJSON('./data/match_results.json')
 innings_data = jsonlite::fromJSON('../../cricketML_data/innings_results.json')
-
 
 # Process the data for Q3a
 # Step 1: Filter out no-result matches
@@ -26,16 +21,16 @@ filtered_innings <- innings_data |>
   dplyr::filter(matchid %in% valid_match_ids)
 
 # Step 3: Add remaining overs and remaining wickets
-processed_data <- merged_data |> 
-  group_by(matchid, innings) |> 
+processed_innings <- filtered_innings |> 
+  group_by(matchid, team) |> 
   mutate(
-    remaining_overs = 50 - floor(as.numeric(over)),
-    cumulative_wickets = cumsum(ifelse(runs.total == 0 & !is.na(over), 1, 0)), # Simplified wicket calculation
-    remaining_wickets = 10 - cumulative_wickets
+    over_number = floor(as.numeric(over)), # Extract the integer part of over (e.g., 0.1 becomes 0)
+    remaining_overs = 50 - over_number, # Calculate remaining overs (assuming 50 overs max)
+    remaining_wickets = 10 - cumsum(!is.na(wicket.player_out)), # Count dismissals cumulatively
+    inning_order = innings # Keep innings column for clarity
   ) |> 
-  ungroup() |> 
-  select(matchid, team, innings, remaining_overs, remaining_wickets, runs.total)
+  select(team, inning_order, remaining_overs, remaining_wickets, matchid)
 
-# Save as csv
-write_csv(processed_data, "processed_cricket_data.csv", row.names=F)
+write.csv(processed_innings, "data/processed_innings.csv", row.names = FALSE)
+
 ```
