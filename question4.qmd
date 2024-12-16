@@ -1,0 +1,9 @@
+---
+title: "question4"
+format: html
+---
+
+1.  Download docker image .tar
+2.  Open a Terminal Navigate to the directory where cricket_model.tar is located
+
+cd /path/to/cricket_model.tarcd /path/to/cricket_model.tar
