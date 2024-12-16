@@ -1,37 +1,56 @@
 library(testthat)
+library(dplyr)
+library(tidymodels)
 
-# Path to mock training data
-training_data_path <- "mock_training_data.csv"
+# source predict_cricket.R
+source('../data_modelling.R')
 
-# Mock training data
-mock_training_data <- data.frame(
-  matchid = rep(1:3, each = 10),
-  team = rep(c("Ireland", "Australia", "India"), each = 10),
-  innings = 1,
-  remaining_overs = rep(50:41, times = 3),
-  remaining_wickets = rep(10:1, times = 3),
-  runs.total = sample(30:100, 30, replace = TRUE)
+# Mock data
+mock_data <- data.frame(
+  remaining_overs = c(45, 40, 35, 30, 25),
+  remaining_wickets = c(10, 9, 8, 7, 6),
+  runs.total = c(50, 45, 40, 35, 30)
 )
 
-# Save mock data for testing
-write.csv(mock_training_data, training_data_path, row.names = FALSE)
+mock_output_path <- "./mock_model.rds"
 
-test_that("Training script saves model artifacts", {
-  source("training_script.R")  # Replace with the actual training script file
-  trained_model <- train_model(training_data_path)  # Replace with actual function
-  
-  # Check if model file is saved
-  expect_true(file.exists("simple_cricket_model.rds"))
-  
-  # Check the model object
-  expect_s3_class(trained_model, "workflow")
+# Test: Prepare Data
+test_that("prepare_data splits data correctly", {
+  data_splits <- prepare_data(data_path = "./data/processed_cricket_data.csv", split_ratio = 0.8)
+  expect_true("train_data" %in% names(data_splits))
+  expect_true("test_data" %in% names(data_splits))
+  expect_gt(nrow(data_splits$train_data), 0)  # Training data should not be empty
+  expect_gt(nrow(data_splits$test_data), 0)   # Testing data should not be empty
 })
 
-test_that("Training script handles missing data gracefully", {
-  incomplete_data <- mock_training_data[-1, ]  # Remove one row
+# Test: Train Model
+test_that("train_model trains a workflow", {
+  data_splits <- prepare_data(data_path = "data/processed_cricket_data.csv")
+  train_data <- data_splits$train_data
+  model <- train_model(train_data)
   
-  expect_error(
-    train_model(incomplete_data),             # Replace with actual function
-    regexp = "missing data"                   # Replace with actual error message
-  )
+  expect_s3_class(model, "workflow")
+})
+
+# Test: Evaluate Model
+test_that("evaluate_model returns metrics", {
+  data_splits <- prepare_data(data_path = "data/processed_cricket_data.csv")
+  train_data <- data_splits$train_data
+  test_data <- data_splits$test_data
+  model <- train_model(train_data)
+  metrics <- evaluate_model(model, test_data)
+  
+  expect_true("metric" %in% colnames(metrics))
+  expect_true("estimate" %in% colnames(metrics))
+})
+
+# Test: Save Model
+test_that("save_model saves the model to disk", {
+  data_splits <- prepare_data(data_path = "data/processed_cricket_data.csv")
+  train_data <- data_splits$train_data
+  model <- train_model(train_data)
+  
+  save_model(model, mock_output_path)
+  expect_true(file.exists(mock_output_path))
+  unlink(mock_output_path)  # Cleanup
 })

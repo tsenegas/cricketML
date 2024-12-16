@@ -1,6 +1,7 @@
 # Load required libraries
 library(dplyr)
 library(jsonlite)
+library(readr)
 
 # Read raw Json files
 match_data = jsonlite::fromJSON('./data/match_results.json')
@@ -28,6 +29,4 @@ processed_innings <- filtered_innings |>
   ) |> 
   select(team, inning_order, remaining_overs, remaining_wickets, matchid)
 
-write.csv(processed_innings, "data/processed_innings.csv", row.names = FALSE)
-
-
+write_csv(processed_innings, "data/processed_cricket_data.csv")
