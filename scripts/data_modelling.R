@@ -23,20 +23,20 @@ prepare_data <- function(data_path, split_ratio = 0.8) {
 # Function: Train the model
 train_model <- function(train_data) {
   # Define a linear regression model specification
-  lm_spec <- linear_reg() %>%
-    set_engine("lm") %>%
+  lm_spec <- linear_reg() |> 
+    set_engine("lm") |> 
     set_mode("regression")
   
   # Create a recipe for preprocessing
   lm_recipe <- recipe(runs.total ~ remaining_overs + remaining_wickets, data = train_data)
   
   # Create a workflow combining the recipe and model
-  lm_workflow <- workflow() %>%
-    add_recipe(lm_recipe) %>%
+  lm_workflow <- workflow() |> 
+    add_recipe(lm_recipe) |> 
     add_model(lm_spec)
   
   # Fit the model on the training data
-  lm_fit <- lm_workflow %>%
+  lm_fit <- lm_workflow |> 
     fit(data = train_data)
   
   return(lm_fit)
@@ -44,9 +44,9 @@ train_model <- function(train_data) {
 
 # Function: Evaluate the model
 evaluate_model <- function(model, test_data) {
-  test_results <- model %>%
-    predict(test_data) %>%
-    bind_cols(test_data) %>%
+  test_results <- model |> 
+    predict(test_data) |> 
+    bind_cols(test_data) |> 
     metrics(truth = runs.total, estimate = .pred)
   
   return(test_results)
@@ -58,8 +58,8 @@ save_model <- function(model, output_path) {
 }
 
 # Main script logic
-data_path <- "data/processed_cricket_data.csv"  # Path to processed data
-model_output_path <- "./model/simple_cricket_model.rds"  # Model save path
+data_path <- "../data/processed_cricket_data.csv"  # Path to processed data
+model_output_path <- "../model/simple_cricket_model.rds"  # Model save path
 
 # Step 1: Prepare data
 data_splits <- prepare_data(data_path)

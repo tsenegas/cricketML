@@ -4,8 +4,8 @@ library(jsonlite)
 library(readr)
 
 # Read raw Json files
-match_data = jsonlite::fromJSON('./data/match_results.json')
-innings_data = jsonlite::fromJSON('../../cricketML_data/innings_results.json')
+match_data = jsonlite::fromJSON('../data/match_results.json')
+innings_data = jsonlite::fromJSON('../../../cricketML_data/innings_results.json') # That path is outside of Github project as innings_results.json is too big to be on Githun. Replace path with the location of your data
 
 # Process the data for Q3a
 # Step 1: Filter out no-result matches
@@ -29,4 +29,4 @@ processed_innings <- filtered_innings |>
   ) |> 
   select(team, inning_order, remaining_overs, remaining_wickets, matchid)
 
-write_csv(processed_innings, "data/processed_cricket_data.csv")
+write_csv(processed_innings, "../data/processed_cricket_data.csv")

@@ -3,7 +3,7 @@ library(dplyr)
 library(tidymodels)
 
 # source predict_cricket.R
-source('../data_modelling.R')
+source('../scripts/data_modelling.R')
 
 # Mock data
 mock_data <- data.frame(
@@ -16,7 +16,7 @@ mock_output_path <- "./mock_model.rds"
 
 # Test: Prepare Data
 test_that("prepare_data splits data correctly", {
-  data_splits <- prepare_data(data_path = "./data/processed_cricket_data.csv", split_ratio = 0.8)
+  data_splits <- prepare_data(data_path = "../data/processed_cricket_data.csv", split_ratio = 0.8)
   expect_true("train_data" %in% names(data_splits))
   expect_true("test_data" %in% names(data_splits))
   expect_gt(nrow(data_splits$train_data), 0)  # Training data should not be empty
@@ -25,7 +25,7 @@ test_that("prepare_data splits data correctly", {
 
 # Test: Train Model
 test_that("train_model trains a workflow", {
-  data_splits <- prepare_data(data_path = "data/processed_cricket_data.csv")
+  data_splits <- prepare_data(data_path = "../data/processed_cricket_data.csv")
   train_data <- data_splits$train_data
   model <- train_model(train_data)
   
@@ -34,19 +34,19 @@ test_that("train_model trains a workflow", {
 
 # Test: Evaluate Model
 test_that("evaluate_model returns metrics", {
-  data_splits <- prepare_data(data_path = "data/processed_cricket_data.csv")
+  data_splits <- prepare_data(data_path = "../data/processed_cricket_data.csv")
   train_data <- data_splits$train_data
   test_data <- data_splits$test_data
   model <- train_model(train_data)
   metrics <- evaluate_model(model, test_data)
   
-  expect_true("metric" %in% colnames(metrics))
-  expect_true("estimate" %in% colnames(metrics))
+  expect_true(".metric" %in% colnames(metrics))
+  expect_true(".estimate" %in% colnames(metrics))
 })
 
 # Test: Save Model
 test_that("save_model saves the model to disk", {
-  data_splits <- prepare_data(data_path = "data/processed_cricket_data.csv")
+  data_splits <- prepare_data(data_path = "../data/processed_cricket_data.csv")
   train_data <- data_splits$train_data
   model <- train_model(train_data)
   
