@@ -18,9 +18,6 @@ get_valid_teams <- function(processed_data_path) {
 }
 
 
-# Define valid teams
-#valid_teams <- unique(processed_data$team)  # Add all valid teams here
-
 # Define a prediction function
 make_predictions <- function(new_data, model_path, valid_teams = get_valid_teams()) {
   # Load the model

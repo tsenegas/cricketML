@@ -116,27 +116,27 @@
     "href": "index.html#question-3.a",
     "title": "cricketML",
     "section": "Question 3.a",
-    "text": "Question 3.a\nHere are my intermediate data after first cleaning :\n\nIntermediate data, in csv\n\nYou can show in details my code to went from raw data to that dataset here"
+    "text": "Question 3.a\nHere are my intermediate data after first cleaning :\n\nIntermediate data, in csv\n\nYou can show in details my code and explanation to went from raw data to that dataset here"
   },
   {
     "objectID": "index.html#question-3.b",
     "href": "index.html#question-3.b",
     "title": "cricketML",
     "section": "Question 3.b",
-    "text": "Question 3.b\nA basic ML model to predict an average team’s expected runs per over, code"
+    "text": "Question 3.b\nWe’ve created a very basic and simple ML model to predict an average team’s expected runs per over. Find the code and explanation here"
   },
   {
     "objectID": "index.html#question-4",
     "href": "index.html#question-4",
     "title": "cricketML",
     "section": "Question 4",
-    "text": "Question 4\nYou can download the docker of image there [here]().\nSee the page for the explanations step by steps"
+    "text": "Question 4\nYou can download docker’s image here\nOnce downloaded, upload the image on your computer and run it - on that image, the model will run and make predictions for the first 5 Ireland overs and display prediction results to stdout.\nFor more explanation to see the process to create the image and to run it, you can take a look there"
   },
   {
     "objectID": "index.html#question-5",
     "href": "index.html#question-5",
     "title": "cricketML",
     "section": "Question 5",
-    "text": "Question 5"
+    "text": "Question 5\nI built some unit tests for my prediction and training code. Check them there"
   }
 ]

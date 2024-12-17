@@ -26,7 +26,7 @@ WORKDIR /app
 
 # Copy files into the container
 COPY run_predictions.sh /app/
-COPY predict_cricket.R /app/
+COPY run_model.R /app/
 COPY simple_cricket_model.rds /app/
 COPY processed_cricket_data.csv /app/
 
