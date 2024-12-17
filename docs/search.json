@@ -1,0 +1,198 @@
+[
+  {
+    "objectID": "unit_test.html",
+    "href": "unit_test.html",
+    "title": "Unit Tests",
+    "section": "",
+    "text": "I created unit tests for testing the prediction and training code using the R package testthat."
+  },
+  {
+    "objectID": "unit_test.html#prepare-data-test-prepare_data",
+    "href": "unit_test.html#prepare-data-test-prepare_data",
+    "title": "Unit Tests",
+    "section": "1. Prepare Data Test (prepare_data):",
+    "text": "1. Prepare Data Test (prepare_data):\n\nThis test checks if the prepare_data function correctly splits the data into training and test sets.\nThe prepare_data function is expected to return a list containing both train_data and test_data. The test verifies that:\n\nBoth train_data and test_data are present in the output.\nBoth datasets have at least one row, ensuring that they are not empty."
+  },
+  {
+    "objectID": "unit_test.html#train-model-test-train_model",
+    "href": "unit_test.html#train-model-test-train_model",
+    "title": "Unit Tests",
+    "section": "2. Train Model Test (train_model):",
+    "text": "2. Train Model Test (train_model):\n\nThis test ensures that the train_model function properly trains a model and returns a workflow object.\nThe function train_model is provided with the train_data from the previously prepared data.\nThe test expects the returned model object to be of class workflow (which is the object type used by the tidymodels framework to store model specifications and preprocessing steps)."
+  },
+  {
+    "objectID": "unit_test.html#evaluate-model-test-evaluate_model",
+    "href": "unit_test.html#evaluate-model-test-evaluate_model",
+    "title": "Unit Tests",
+    "section": "3. Evaluate Model Test (evaluate_model):",
+    "text": "3. Evaluate Model Test (evaluate_model):\n\nThis test checks that the evaluate_model function returns the correct evaluation metrics.\nThe train_model function is used to train a model with train_data, and then the model is evaluated using test_data. The test expects the returned metrics to contain two columns: .metric and .estimate, which are standard outputs from yardstick::metrics used in tidymodels to store evaluation metrics."
+  },
+  {
+    "objectID": "unit_test.html#save-model-test-save_model",
+    "href": "unit_test.html#save-model-test-save_model",
+    "title": "Unit Tests",
+    "section": "4. Save Model Test (save_model):",
+    "text": "4. Save Model Test (save_model):\n\nThis test verifies that the save_model function successfully saves the trained model to disk.\nThe test trains a model using the train_model function, then saves it using the save_model function with the path mock_model.rds.\nAfter saving, the test checks if the file exists at the specified location and then deletes the file using unlink() to clean up after the test."
+  },
+  {
+    "objectID": "unit_test.html#valid-predict-test",
+    "href": "unit_test.html#valid-predict-test",
+    "title": "Unit Tests",
+    "section": "1. Valid Predict Test:",
+    "text": "1. Valid Predict Test:\n\nPurpose: This test checks that the make_predictions function returns valid predictions when provided with valid input data.\nTest Logic:\n\nThe function make_predictions is called with model_path and mock_data as inputs.\nIt asserts that the predictions are not NULL (expect_true(!is.null(predictions))).\nIt checks that the function returns predictions for all three rows in the mock data (expect_equal(nrow(predictions), 3)). ## 2. Invalid Team test:\n\nPurpose: This test ensures that the function handles invalid team names gracefully by raising an error.\nTest Logic:\n\nThe mock data is modified to contain an invalid team (“Invalid Team”).\nThe test expects the make_predictions function to throw an error with the message “Invalid team(s) found in input data” when the data contains an invalid team."
+  },
+  {
+    "objectID": "unit_test.html#edge-case-test",
+    "href": "unit_test.html#edge-case-test",
+    "title": "Unit Tests",
+    "section": "3. Edge Case Test:",
+    "text": "3. Edge Case Test:\n\nPurpose: This test checks how the function handles edge cases for remaining_overs and remaining_wickets, such as when they are at their maximum or minimum values.\nTest Logic:\n\nAn edge case dataset is created with rows containing remaining_overs = 50 and remaining_wickets = 10 for the maximum case, and remaining_overs = 0 and remaining_wickets = 0 for the minimum case.\nThe test checks that the predictions are generated for both rows (expect_equal(nrow(predictions), 2)).\nIt ensures that all predicted values are greater than or equal to 0 (expect_true(all(predictions$.pred &gt;= 0))), as negative predictions would not be valid."
+  },
+  {
+    "objectID": "unit_test.html#summary",
+    "href": "unit_test.html#summary",
+    "title": "Unit Tests",
+    "section": "Summary:",
+    "text": "Summary:\nThese tests ensure the robustness of the make_predictions function in handling:\n\nValid input data (returns predictions).\nInvalid team names (throws an error).\nEdge cases where the input values are at their extremes (ensures predictions are valid and non-negative).\n\nThese unit tests help ensure the reliability and correctness of the model’s prediction process under different scenarios."
+  },
+  {
+    "objectID": "deployment.html",
+    "href": "deployment.html",
+    "title": "question4",
+    "section": "",
+    "text": "I will describe how I packaged a solution to build, deploy, and run my model locally.\nI decided to use Docker, so the only requirement to run my model locally is having Docker Desktop if you are using Windows or macOS, or Docker Engine if you are using Linux.\nI wanted my solution to offer two options to the user:\n\nRun a demonstration where I make predictions for the first 5 overs of Ireland’s match and display the results to stdout.\nRun the model on your own data.\n\n\n1. run_model.R\nThis R script is designed to load a pre-trained model and make predictions on cricket match data. The script is divided into two main options that can be run from the command line.\nOption 1 (Demo): It loads a preprocessed dataset and filters it to focus on the first 5 overs of an Ireland match, using the model to predict the total runs for those overs.\nOption 2 (User Dataset): It accepts a user-provided dataset, validates that it includes the required columns (remaining_overs, remaining_wickets, and team), and uses the model to predict the runs for each row in the dataset. The predictions are then displayed in a formatted output.\nThe script also includes functions to validate the teams, load the model, and make predictions. It ensures that all the required columns are present in the input data and handles errors such as missing or invalid files and columns.\n\n#!/usr/bin/env Rscript\n\n# Load required libraries\nsuppressPackageStartupMessages({\n  library(dplyr)\n  library(tidymodels)\n  library(readr)\n})\n\n# Load the model\nmodel_path &lt;- \"simple_cricket_model.rds\"\n\n# Load the processed data\ndata_path &lt;- \"processed_cricket_data.csv\"\nprocessed_data &lt;- read_csv(data_path)\n\n\n# Define valid teams (to avoid dependency on processed data directly)\nget_valid_teams &lt;- function(processed_data_path) {\n  processed_data &lt;- read_csv(data_path)\n  return(unique(processed_data$team))\n}\n\n# Function to make predictions\nmake_predictions &lt;- function(new_data, model_path, valid_teams = get_valid_teams()) {\n  # Load the model\n  model &lt;- readRDS(model_path)\n  \n  # Validate input data\n  if (!all(new_data$team %in% valid_teams)) {\n    stop(\"Invalid team(s) found in input data\")\n  }\n  \n  # Make predictions\n  predictions &lt;- new_data |&gt; \n    mutate(predicted_runs = predict(model, new_data = new_data))\n  \n  return(predictions)\n}\n\n# Parse command-line arguments\nargs &lt;- commandArgs(trailingOnly = TRUE)\n\n# Validate arguments\nif (length(args) &lt; 1) {\n  cat(\"Error: Missing arguments.\\n\")\n  cat(\"Usage:\\n\")\n  cat(\"   Rscript run_model.R 1\\n\")\n  cat(\"   Rscript run_model.R 2 /path/to/your_dataset.csv\\n\")\n  stop(\"Execution halted.\")\n}\n\noption &lt;- args[1]\n\n# Option 1: Run the demo\nif (option == \"1\") {\n  cat(\"\\nRunning demo with the first 5 Ireland overs...\\n\")\n  \n  # Load the processed data\n  processed_data &lt;- read_csv(data_path, show_col_types = FALSE)\n  \n# Filter for the first 5 overs by Ireland\nireland_data &lt;- processed_data |&gt; \n  filter(team == \"Ireland\") |&gt;    \n  filter(remaining_overs &gt; 45) |&gt;\n  filter(matchid == matchid[1]) # Keep only first 5 Ireland overs for the first game we have in data\n\npredictions &lt;- make_predictions(new_data = ireland_data, model_path, get_valid_teams())\n\ncolnames(predictions)[7] = 'runs.predicted'\n\npred_output &lt;- predictions |&gt; \n  select(team, runs.total, runs.predicted)\n\n  cat(\"\\nPredictions for the first 5 overs of Ireland at game 1029001:\\n\")\n  print(pred_output, n = 30)\n\n# Option 2: User-provided dataset\n} else if (option == \"2\") {\n  # Check if dataset path is provided\n  if (length(args) &lt; 2) {\n    stop(\"Error: Please provide the path to your dataset.\\nUsage: Rscript run_model.R 2 /path/to/your_dataset.csv\")\n  }\n  \n  input_path &lt;- args[2]\n  \n  # Validate file existence\n  if (!file.exists(input_path)) {\n    stop(\"Error: File not found. Please provide a valid file path.\")\n  }\n  \n  cat(\"\\nLoading user-provided dataset...\\n\")\n  \n  # Load the user-provided dataset\n  user_data &lt;- read_csv(input_path, show_col_types = FALSE)\n\n  # Required columns\n  required_columns &lt;- c(\"remaining_overs\", \"remaining_wickets\", \"team\")\n  \n  # Check for missing columns\n  missing_columns &lt;- setdiff(required_columns, colnames(user_data))\n  if (length(missing_columns) &gt; 0) {\n    cat(\"Error: The following required columns are missing from your dataset:\\n\")\n    cat(paste(missing_columns, collapse = \", \"), \"\\n\")\n    cat(\"Please ensure that your dataset includes at least the following columns:\\n\")\n    cat(paste(required_columns, collapse = \", \"), \"\\n\")\n    stop(\"Execution halted.\")\n  }\n  \n  \n  # Make predictions\n  predictions &lt;- make_predictions(new_data = user_data, model_path, get_valid_teams())\n  \n  # Format and display predictions\n  pred_output &lt;- predictions |&gt; \n    select(team, predicted_runs)\n\n  cat(\"\\nModel Predictions:\\n\")\n  print(pred_output, n = 30)\n\n# Invalid Option\n} else {\n  stop(\"Invalid option. Please use 1 for demo or 2 to provide a dataset.\")\n}\n\n}\n\n\n\n2. run_prediction.sh\nThis Bash script prompts the user to select an option to either run a demo or provide their own dataset for making cricket match predictions.\nOption 1: The user can run a demo with the first 5 overs of Ireland’s match. If this option is chosen, the script runs the R script (run_model.R) with the argument 1.\nOption 2: The user can provide their own dataset by pasting it directly into the terminal. The script captures the data and saves it to a temporary file (/tmp/user_data.csv). It then runs the R script (run_model.R) with the argument 2 and the path to the user-provided dataset.\nThe script ensures that it stops execution on any errors (set -e) and validates the user’s choice. If an invalid option is entered, the script prints an error message.\n\n#!/bin/bash\n\n# Ensure the script stops on errors\nset -e\n\n# Set the path to your R script\nR_SCRIPT=\"run_model.R\"\n\n# Prompt the user for input\necho \"Please select an option:\"\necho \"1: Run a demo with the first 5 Ireland overs\"\necho \"2: Provide your own dataset\"\n\n# Read the user's input\nread -p \"Enter your choice (1 or 2): \" user_choice\n\n# Based on the input, run the R script with the appropriate argument\nif [ \"$user_choice\" == \"1\" ]; then\n  Rscript $R_SCRIPT 1\nelif [ \"$user_choice\" == \"2\" ]; then\n echo \"Paste your data (separate by comma) directly (Ctrl+D to finish):\"\n\n  cat &gt; /tmp/user_data.csv\n  \n  # Run the R script with the uploaded dataset\n  Rscript $R_SCRIPT 2 /tmp/user_data.csv\nelse\n  echo \"Invalid option. Please enter 1 or 2.\"\nfi\n\n\n\n3. dockerfile\nThis Dockerfile sets up an environment to run an R-based cricket prediction model. Here’s what each part does:\n\n1.Base Image: It starts with the official r-base:4.3.0 image, which includes a minimal installation of R version 4.3.0.\n2.Install System Dependencies: It installs necessary system libraries such as bash, development libraries (libcurl4, libssl, etc.), and tools (build-essential, gfortran, pkg-config). These libraries and tools are needed to compile and install R packages and other dependencies.\n3.Install R Packages: The required R packages (dplyr, tidymodels, readr) are installed using the R install.packages() function. These packages are used for data manipulation, model building, and reading data in your script.\n4.Set Working Directory: The working directory is set to /app. This is where the application’s files (like scripts and data) will be stored inside the container.\n5.Copy Files into the Container: The necessary files (run_predictions.sh, run_model.R, simple_cricket_model.rds, processed_cricket_data.csv) are copied from the host machine into the /app directory inside the container.\n6.Make the Shell Script Executable: The chmod +x command makes the run_predictions.sh script executable so that it can be run when the container starts.\n7.Specify the Command to Run: Finally, the container will run the shell script (run_predictions.sh) using /bin/bash when the container starts.\n\nThis setup allows you to containerize your R model, including the necessary dependencies and files, making it easy to deploy and run the prediction tasks in an isolated environment.\n\n# Use the official R base image\nFROM r-base:4.3.0\n\n# Install bash and required system dependencies\nRUN apt-get update && apt-get install -y \\\n    bash \\\n    libcurl4-openssl-dev \\\n    libssl-dev \\\n    libxml2-dev \\\n    libfreetype6-dev \\\n    libfontconfig1-dev \\\n    libpng-dev \\\n    libtiff5-dev \\\n    libjpeg-dev \\\n    build-essential \\\n    gfortran \\\n    pkg-config\n\n\n# Install required R packages\nRUN R -e \"install.packages(c('dplyr', 'tidymodels', 'readr'), repos='https://cloud.r-project.org/')\"\n\n\n# Set the working directory\nWORKDIR /app\n\n# Copy files into the container\nCOPY run_predictions.sh /app/\nCOPY run_model.R /app/\nCOPY simple_cricket_model.rds /app/\nCOPY processed_cricket_data.csv /app/\n\n# Make the shell script executable\nRUN chmod +x /app/run_predictions.sh\n\n# Specify the command to run the script\nCMD [\"/bin/bash\", \"-c\", \"./run_predictions.sh\"]\n\n\n\n4.Download docker image / upload it / Run it\nYou can download the docker image here\nWhen running the image, you may need to specify -it as you will be prompted to enter a choice in the command-line interface.\n\n# Upload the image (make sure Docker Desktop is open and/or running)\ndocker load -i cricket_model.tar\n\n# Run the image\ndocker run --rm -it cricket_model\n\nIf you choose option 1, it will run a demonstration using the first 5 overs of Ireland’s match and display the results to stdout.\nIf you choose option 2, you can copy and paste your data directly into the terminal and press Ctrl+D. The model will then make predictions on your data."
+  },
+  {
+    "objectID": "data_modelling.html",
+    "href": "data_modelling.html",
+    "title": "Data Modelling",
+    "section": "",
+    "text": "Below is a description of my code to create a model that predicts an average team’s expected runs per over. I am using tidymodels and a simple linear regression model. I use four functions in the code to facilitate the creation of unit tests.\n\nPrepare data for modeling\nWe use the first function to select only the features that will be used in the model: remaining_overs and remaining_wickets to predict runs.total. We split the data into 80/20 for training and testing the model.\n\n# Load required libraries\nlibrary(tidymodels)\nlibrary(dplyr)\nlibrary(readr)\n\n# Function: Prepare data for modeling\nprepare_data &lt;- function(data_path, split_ratio = 0.8) {\n  # Load processed data\n  processed_data &lt;- read_csv(data_path)\n  \n  # Select relevant columns\n  model_data &lt;- processed_data |&gt; \n    select(remaining_overs, remaining_wickets, runs.total)\n  \n  # Split the data into training and testing sets\n  set.seed(123)  # For reproducibility\n  data_split &lt;- initial_split(model_data, prop = split_ratio)\n  \n  list(train_data = training(data_split), test_data = testing(data_split))\n\n}\n\n\n\nTrain the model\nI define a function called train_model to train a linear regression model using the tidymodels framework. First, I specify the linear regression model with the linear_reg function and set it to use the “lm” engine for regression. Then, I create a recipe to preprocess the data, focusing on the features remaining_overs and remaining_wickets to predict runs.total. I combine the recipe and model specification into a workflow, which is then fitted to the training data. The function returns the trained model, ready for evaluation or prediction.\n\n# Function: Train the model\ntrain_model &lt;- function(train_data) {\n  # Define a linear regression model specification\n  lm_spec &lt;- linear_reg() |&gt; \n    set_engine(\"lm\") |&gt; \n    set_mode(\"regression\")\n  \n  # Create a recipe for preprocessing\n  lm_recipe &lt;- recipe(runs.total ~ remaining_overs + remaining_wickets, data = train_data)\n  \n  # Create a workflow combining the recipe and model\n  lm_workflow &lt;- workflow() |&gt; \n    add_recipe(lm_recipe) |&gt; \n    add_model(lm_spec)\n  \n  # Fit the model on the training data\n  lm_fit &lt;- lm_workflow |&gt; \n    fit(data = train_data)\n  \n  return(lm_fit)\n}\n\n\n\nEvaluate the model\nI define a function called evaluate_model to assess the performance of the trained model. The function takes the trained model and the test data as input. It makes predictions on the test data, combines the predicted values with the actual test data, and then computes performance metrics, such as RMSE, R-squared, and MAE, using the metrics function. The function returns the evaluation results, providing insights into how well the model performs on unseen data.\n\n# Function: Evaluate the model\nevaluate_model &lt;- function(model, test_data) {\n  test_results &lt;- model |&gt; \n    predict(test_data) |&gt; \n    bind_cols(test_data) |&gt; \n    metrics(truth = runs.total, estimate = .pred)\n  \n  return(test_results)\n}\n\n\n\nSave the model\nI define a function called save_model to save the trained model to disk. The function takes the model and an output file path as inputs, and then uses the saveRDS function to save the model as an .RDS file. This allows the model to be easily loaded and reused later without needing to retrain it.\n\n# Function: Save the model to disk\nsave_model &lt;- function(model, output_path) {\n  saveRDS(model, file = output_path)\n}\n\n\n\nTL;DR\n\n# Load required libraries\nlibrary(tidymodels)\nlibrary(dplyr)\nlibrary(readr)\n\n\n# Function: Prepare data for modeling\nprepare_data &lt;- function(data_path, split_ratio = 0.8) {\n  # Load processed data\n  processed_data &lt;- read_csv(data_path)\n  \n  # Select relevant columns\n  model_data &lt;- processed_data |&gt; \n    select(remaining_overs, remaining_wickets, runs.total)\n  \n  # Split the data into training and testing sets\n  set.seed(123)  # For reproducibility\n  data_split &lt;- initial_split(model_data, prop = split_ratio)\n  \n  list(train_data = training(data_split), test_data = testing(data_split))\n}\n\n# Function: Train the model\ntrain_model &lt;- function(train_data) {\n  # Define a linear regression model specification\n  lm_spec &lt;- linear_reg() |&gt; \n    set_engine(\"lm\") |&gt; \n    set_mode(\"regression\")\n  \n  # Create a recipe for preprocessing\n  lm_recipe &lt;- recipe(runs.total ~ remaining_overs + remaining_wickets, data = train_data)\n  \n  # Create a workflow combining the recipe and model\n  lm_workflow &lt;- workflow() |&gt; \n    add_recipe(lm_recipe) |&gt; \n    add_model(lm_spec)\n  \n  # Fit the model on the training data\n  lm_fit &lt;- lm_workflow |&gt; \n    fit(data = train_data)\n  \n  return(lm_fit)\n}\n\n# Function: Evaluate the model\nevaluate_model &lt;- function(model, test_data) {\n  test_results &lt;- model |&gt; \n    predict(test_data) |&gt; \n    bind_cols(test_data) |&gt; \n    metrics(truth = runs.total, estimate = .pred)\n  \n  return(test_results)\n}\n\n# Function: Save the model to disk\nsave_model &lt;- function(model, output_path) {\n  saveRDS(model, file = output_path)\n}\n\n# Main script logic\ndata_path &lt;- \"../data/processed_cricket_data.csv\"  # Path to processed data\nmodel_output_path &lt;- \"../model/simple_cricket_model.rds\"  # Model save path\n\n# Step 1: Prepare data\ndata_splits &lt;- prepare_data(data_path)\ntrain_data &lt;- data_splits$train_data\ntest_data &lt;- data_splits$test_data\n\n# Step 2: Train the model\nlm_fit &lt;- train_model(train_data)\n\n# Step 3: Evaluate the model\ntest_results &lt;- evaluate_model(lm_fit, test_data)\nprint(test_results)\n\n# Step 4: Save the model\nsave_model(lm_fit, model_output_path)"
+  },
+  {
+    "objectID": "about.html",
+    "href": "about.html",
+    "title": "About me",
+    "section": "",
+    "text": "I’m Thibault Senegas, a self-taught programmer and expert in R and Shiny. As a Lead Data Scientist and Chief Product Owner at quantum simulations*, I lead the creation of digital twins for companies, sports teams, and geographical regions. My focus is on merging cutting-edge data science with real-world applications.\nI hold an M.Sc. in International Business from HEC Montréal and a Master’s degree in Engineering from INP/ENSIACET in Toulouse, France. Before joining quantum simulations*, I honed my skills as a Data Scientist at IBM in their Advanced Analytics practice.\nI currently reside in Montréal, QC, with my wife and two sons.\nMy Resume"
+  },
+  {
+    "objectID": "architecture.html",
+    "href": "architecture.html",
+    "title": "Scalable IT Architecture",
+    "section": "",
+    "text": "Amazon S3:\n\nUse S3 buckets to store raw high-frame-rate spatial-temporal data.\nSeparate folders for raw data, pre-processed data, and model artifacts.\n\nAWS Glue:\n\nAutomate the ETL process to clean and transform data for model training and inference.\nGlue can handle the scale of data for multiple seasons and ensure structured data pipelines.\n\n\n\n\n\nAmazon SageMaker:\n\nTrain models using SageMaker’s built-in resources.\nUse a dedicated instance with 8 cores and large memory for the 8-hour training sessions.\nStore training metrics and artifacts in S3.\n\n\n\n\n\n\nAWS Batch:\n\nSchedule batch jobs for overnight predictions (50 games/day).\nEach game prediction requires a single CPU and 4 GB of memory for 60 minutes.\nUse Compute Environment configurations to scale EC2 resources for optimal cost-efficiency.\n\n\n\n\n\n\nSnowflake:\n\nStore structured data (aggregated predictions, historical data) for analytical queries.\nntegration with S3 for seamless data loading and querying.\n\n\n\n\n\n\nAmazon CloudWatch:\n\nMonitor training and prediction jobs.\nSet up alarms for model performance degradation.\n\nSageMaker Model Monitor:\n\nTrack model performance metrics (e.g., prediction accuracy, latency) and data drift.\n\n\n\n\n\n\nR Shiny or Streamlit:\n\nDeploy a visualization app to present model outputs, trends, and performance metrics.\nHost the app using a dockerized solution (shinyproxy works nicely)\n\n\n\n\n\n\nApache Airflow (Managed on AWS MWAA - Managed Workflows for Apache Airflow):\n\nSchedule and monitor workflows for ETL, model training, and predictions.\nIntegrate with S3, Snowflake and SageMaker for seamless pipeline execution.\n\n\n\n\n\n\nAuto-Scaling Groups:\n\nDynamically scale EC2 instances based on workload for cost management.\n\nIAM Roles:\n\nManage access and permissions across AWS services to ensure data security.\n\nVPC:\n\nDeploy services in a private network for enhanced security."
+  },
+  {
+    "objectID": "architecture.html#model-training",
+    "href": "architecture.html#model-training",
+    "title": "Scalable IT Architecture",
+    "section": "",
+    "text": "Amazon SageMaker:\n\nTrain models using SageMaker’s built-in resources.\nUse a dedicated instance with 8 cores and large memory for the 8-hour training sessions.\nStore training metrics and artifacts in S3."
+  },
+  {
+    "objectID": "architecture.html#model-prediction",
+    "href": "architecture.html#model-prediction",
+    "title": "Scalable IT Architecture",
+    "section": "",
+    "text": "AWS Batch:\n\nSchedule batch jobs for overnight predictions (50 games/day).\nEach game prediction requires a single CPU and 4 GB of memory for 60 minutes.\nUse Compute Environment configurations to scale EC2 resources for optimal cost-efficiency."
+  },
+  {
+    "objectID": "architecture.html#data-warehouse",
+    "href": "architecture.html#data-warehouse",
+    "title": "Scalable IT Architecture",
+    "section": "",
+    "text": "Snowflake:\n\nStore structured data (aggregated predictions, historical data) for analytical queries.\nntegration with S3 for seamless data loading and querying."
+  },
+  {
+    "objectID": "architecture.html#mlops-and-model-monitoring",
+    "href": "architecture.html#mlops-and-model-monitoring",
+    "title": "Scalable IT Architecture",
+    "section": "",
+    "text": "Amazon CloudWatch:\n\nMonitor training and prediction jobs.\nSet up alarms for model performance degradation.\n\nSageMaker Model Monitor:\n\nTrack model performance metrics (e.g., prediction accuracy, latency) and data drift."
+  },
+  {
+    "objectID": "architecture.html#visualization-and-reporting",
+    "href": "architecture.html#visualization-and-reporting",
+    "title": "Scalable IT Architecture",
+    "section": "",
+    "text": "R Shiny or Streamlit:\n\nDeploy a visualization app to present model outputs, trends, and performance metrics.\nHost the app using a dockerized solution (shinyproxy works nicely)"
+  },
+  {
+    "objectID": "architecture.html#orchestration",
+    "href": "architecture.html#orchestration",
+    "title": "Scalable IT Architecture",
+    "section": "",
+    "text": "Apache Airflow (Managed on AWS MWAA - Managed Workflows for Apache Airflow):\n\nSchedule and monitor workflows for ETL, model training, and predictions.\nIntegrate with S3, Snowflake and SageMaker for seamless pipeline execution."
+  },
+  {
+    "objectID": "architecture.html#scalability-and-security",
+    "href": "architecture.html#scalability-and-security",
+    "title": "Scalable IT Architecture",
+    "section": "",
+    "text": "Auto-Scaling Groups:\n\nDynamically scale EC2 instances based on workload for cost management.\n\nIAM Roles:\n\nManage access and permissions across AWS services to ensure data security.\n\nVPC:\n\nDeploy services in a private network for enhanced security."
+  },
+  {
+    "objectID": "data_processing.html",
+    "href": "data_processing.html",
+    "title": "Data Processing",
+    "section": "",
+    "text": "Below, you will find a brief explanation of the world, as it is rather simple.\n\nLoading Packages and Data\nPlease note that I moved the innings_results.json file out of my Git folder, as it was too large to be pushed to GitHub due to the size limit.\n\n# Load required libraries\nlibrary(dplyr)\nlibrary(jsonlite)\n\n# Read raw Json files\nmatch_data = jsonlite::fromJSON('./data/match_results.json')\ninnings_data = jsonlite::fromJSON('../../cricketML_data/innings_results.json')\n\n\n\nFind games with an outcome different than ‘no results’\nWe examine all the games that have an outcome different from ‘no results’ and filter the innings_data to keep only the relevant games.\n\n# Process the data for Q3a\n# Step 1: Filter out no-result matches\nvalid_match_ids &lt;- match_data |&gt; \n  dplyr::filter(is.na(result) | result == 'tie') |&gt; \n  dplyr::pull(matchid) |&gt; \n  unique()\n\n# Step 2: Filter innings data to include only valid matches\nfiltered_innings &lt;- innings_data |&gt; \n  dplyr::filter(matchid %in% valid_match_ids)\n\n\n\nCleaning and Processing the Data\nHere, we clean and process the data to prepare it for our model. Since my knowledge of cricket is limited and the assessment focuses more on the deployment of an ML model, I will primarily use only two features: remaining_overs and remaining_wickets as variables.\n\n# Step 3: Add remaining overs and remaining wickets\nprocessed_innings &lt;- filtered_innings |&gt; \n  group_by(matchid, team) |&gt; \n  mutate(\n    over_number = floor(as.numeric(over)), # Extract the integer part of over (e.g., 0.1 becomes 0)\n    remaining_overs = 50 - over_number, # Calculate remaining overs (assuming 50 overs max)\n    remaining_wickets = 10 - cumsum(!is.na(wicket.player_out)), # Count dismissals cumulatively\n    inning_order = innings # Keep innings column for clarity\n  ) |&gt; \n  select(team, inning_order, remaining_overs, remaining_wickets, matchid)\n\n# save as csv\nwrite.csv(processed_innings, \"data/processed_innings.csv\", row.names = FALSE)\n\n\n\nTL;DR\n\n# Load required libraries\nlibrary(dplyr)\nlibrary(jsonlite)\n\n# Read raw Json files\nmatch_data = jsonlite::fromJSON('./data/match_results.json')\ninnings_data = jsonlite::fromJSON('../../cricketML_data/innings_results.json')\n\n# Process the data for Q3a\n# Step 1: Filter out no-result matches\nvalid_match_ids &lt;- match_data |&gt; \n  dplyr::filter(is.na(result) | result == 'tie') |&gt; \n  dplyr::pull(matchid) |&gt; \n  unique()\n\n# Step 2: Filter innings data to include only valid matches\nfiltered_innings &lt;- innings_data |&gt; \n  dplyr::filter(matchid %in% valid_match_ids)\n\n# Step 3: Add remaining overs and remaining wickets\nprocessed_innings &lt;- filtered_innings |&gt; \n  group_by(matchid, team) |&gt; \n  mutate(\n    over_number = floor(as.numeric(over)), # Extract the integer part of over (e.g., 0.1 becomes 0)\n    remaining_overs = 50 - over_number, # Calculate remaining overs (assuming 50 overs max)\n    remaining_wickets = 10 - cumsum(!is.na(wicket.player_out)), # Count dismissals cumulatively\n    inning_order = innings # Keep innings column for clarity\n  ) |&gt; \n  select(team, inning_order, remaining_overs, remaining_wickets, matchid)\n\nwrite.csv(processed_innings, \"data/processed_innings.csv\", row.names = FALSE)"
+  },
+  {
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "cricketML",
+    "section": "",
+    "text": "This project showcases my technical and analytical skills through the completion of a comprehensive data science assessment provided by Teamworks / Zelus Analytics. The assessment focuses on modeling, infrastructure design, and deployment, using ball-by-ball data from professional cricket matches.\nI truly enjoyed working on this exercise. As I am not used to deploying models for local use, I found it very interesting to rediscover some functionalities. My usual experience involves deploying models and web applications (primarily in R Shiny) via Docker, with API calls directly to servers.\nI am very excited about the possibility of continuing the recruitment process with Teamworks/Zelus Analytics, if the opportunity arises. I would also like to highlight that I have a strong expertise in R Shiny. From posts I saw from Christopher Pickard, I understand that the Soccer team is looking for engineers and data scientists working in R/R Shiny, which are my primary areas of expertise. That said, I am open to joining any team within Teamworks/Zelus Analytics.\n\n\n\nInfrastructure Design: Develop a scalable architecture for deploying a predictive model that processes high-frequency temporal data at scale.\nData Preparation and Modeling: Create a dataset from match data and develop a basic predictive model for expected runs per over in cricket matches.\nDeployment and Testing: Package the model in a cross-platform, reproducible environment using Docker, and implement unit testing for robustness.\n\n\n\n\n\nScalable Architecture: Designed a cloud-based pipeline to process ~1 GB of high-frame-rate data per game, addressing storage, computation, and prediction delivery at scale.\nPredictive Modeling: Built a streamlined model pipeline using run and wicket data to predict performance metrics, emphasizing reproducibility and interpretability.\nReproducible Deployment: Leveraged containerization to ensure cross-platform usability, along with CLI tools for local execution.\nQuality Assurance: Developed unit tests to validate model training and prediction, ensuring reliability under varied conditions.\n\nThis work demonstrates my ability to design end-to-end data solutions, leveraging my expertise in modeling, scalable system architecture, and reproducible deployment. The methodology and results are detailed throughout this site to provide transparency and insight into my problem-solving approach"
+  },
+  {
+    "objectID": "index.html#key-objectives",
+    "href": "index.html#key-objectives",
+    "title": "cricketML",
+    "section": "",
+    "text": "Infrastructure Design: Develop a scalable architecture for deploying a predictive model that processes high-frequency temporal data at scale.\nData Preparation and Modeling: Create a dataset from match data and develop a basic predictive model for expected runs per over in cricket matches.\nDeployment and Testing: Package the model in a cross-platform, reproducible environment using Docker, and implement unit testing for robustness."
+  },
+  {
+    "objectID": "index.html#highlights",
+    "href": "index.html#highlights",
+    "title": "cricketML",
+    "section": "",
+    "text": "Scalable Architecture: Designed a cloud-based pipeline to process ~1 GB of high-frame-rate data per game, addressing storage, computation, and prediction delivery at scale.\nPredictive Modeling: Built a streamlined model pipeline using run and wicket data to predict performance metrics, emphasizing reproducibility and interpretability.\nReproducible Deployment: Leveraged containerization to ensure cross-platform usability, along with CLI tools for local execution.\nQuality Assurance: Developed unit tests to validate model training and prediction, ensuring reliability under varied conditions.\n\nThis work demonstrates my ability to design end-to-end data solutions, leveraging my expertise in modeling, scalable system architecture, and reproducible deployment. The methodology and results are detailed throughout this site to provide transparency and insight into my problem-solving approach"
+  },
+  {
+    "objectID": "index.html#question-2",
+    "href": "index.html#question-2",
+    "title": "cricketML",
+    "section": "Question 2",
+    "text": "Question 2\nI rate my knowledge of cricket at 1. I basicly never seen or read anything related to cricket."
+  },
+  {
+    "objectID": "index.html#question-3.a",
+    "href": "index.html#question-3.a",
+    "title": "cricketML",
+    "section": "Question 3.a",
+    "text": "Question 3.a\nHere are my intermediate data after first cleaning :\n\nIntermediate data, in csv\n\nYou can show in details my code and explanation to went from raw data to that dataset here\nYou can also access the RScript directly on my GitHub repo - data_processing.R"
+  },
+  {
+    "objectID": "index.html#question-3.b",
+    "href": "index.html#question-3.b",
+    "title": "cricketML",
+    "section": "Question 3.b",
+    "text": "Question 3.b\nWe’ve created a very basic and simple ML model to predict an average team’s expected runs per over. Find the code and explanation here\nYou can also access the RScript directly on my GitHub repo - data_modelling.R"
+  },
+  {
+    "objectID": "index.html#question-4",
+    "href": "index.html#question-4",
+    "title": "cricketML",
+    "section": "Question 4",
+    "text": "Question 4\nYou can download docker’s image here\nOnce downloaded, upload the image on your computer and run it - there are some pre requis : - You need to have docker.desktop (For Windows or Mac depending of your OS / Get Docker Engine on Linux) - On your cmd invit, navigate to the folder where you download the docker image and type : docker load -i cricket_model.tar - from your cmd invit, type docker run –rm -it cricket_model (you need to put -it, as you will need to select options)\nRunning the docker’s image, you will have two options : - 1. Run the demo - 2. Run on your datas\nFor more explanation to see the process to create the image and to run it, you can take a look there"
+  },
+  {
+    "objectID": "index.html#question-5",
+    "href": "index.html#question-5",
+    "title": "cricketML",
+    "section": "Question 5",
+    "text": "Question 5\nI built some unit tests for my prediction and training code. Check them here"
+  }
+]

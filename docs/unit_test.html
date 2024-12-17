@@ -1,0 +1,813 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.5.55">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>Unit Tests – cricketML</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<script src="site_libs/quarto-html/quarto.js"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+
+
+<link rel="stylesheet" href="styles.css">
+</head>
+
+<body class="nav-fixed">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a class="navbar-brand" href="./index.html">
+    <span class="navbar-title">cricketML</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="./index.html"> 
+<span class="menu-text">Home</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="./data_processing.html"> 
+<span class="menu-text">Data Processing (Q3a)</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="./data_modelling.html"> 
+<span class="menu-text">Data Modelling (Q3b)</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="./deployment.html"> 
+<span class="menu-text">Deployment (Q4)</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link active" href="./unit_test.html" aria-current="page"> 
+<span class="menu-text">Unit Tests (Q5)</span></a>
+  </li>  
+</ul>
+            <ul class="navbar-nav navbar-nav-scroll ms-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="./about.html"> 
+<span class="menu-text">About me</span></a>
+  </li>  
+</ul>
+          </div> <!-- /navcollapse -->
+            <div class="quarto-navbar-tools">
+</div>
+      </div> <!-- /container-fluid -->
+    </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#unit-tests---training" id="toc-unit-tests---training" class="nav-link active" data-scroll-target="#unit-tests---training">Unit tests - Training</a>
+  <ul class="collapse">
+  <li><a href="#prepare-data-test-prepare_data" id="toc-prepare-data-test-prepare_data" class="nav-link" data-scroll-target="#prepare-data-test-prepare_data">1. Prepare Data Test (prepare_data):</a></li>
+  <li><a href="#train-model-test-train_model" id="toc-train-model-test-train_model" class="nav-link" data-scroll-target="#train-model-test-train_model">2. Train Model Test (train_model):</a></li>
+  <li><a href="#evaluate-model-test-evaluate_model" id="toc-evaluate-model-test-evaluate_model" class="nav-link" data-scroll-target="#evaluate-model-test-evaluate_model">3. Evaluate Model Test (evaluate_model):</a></li>
+  <li><a href="#save-model-test-save_model" id="toc-save-model-test-save_model" class="nav-link" data-scroll-target="#save-model-test-save_model">4. Save Model Test (save_model):</a></li>
+  </ul></li>
+  <li><a href="#units-tests---predictions" id="toc-units-tests---predictions" class="nav-link" data-scroll-target="#units-tests---predictions">Units tests - Predictions</a>
+  <ul class="collapse">
+  <li><a href="#valid-predict-test" id="toc-valid-predict-test" class="nav-link" data-scroll-target="#valid-predict-test">1. Valid Predict Test:</a></li>
+  <li><a href="#edge-case-test" id="toc-edge-case-test" class="nav-link" data-scroll-target="#edge-case-test">3. Edge Case Test:</a></li>
+  <li><a href="#summary" id="toc-summary" class="nav-link" data-scroll-target="#summary">Summary:</a></li>
+  </ul></li>
+  <li><a href="#tests-results" id="toc-tests-results" class="nav-link" data-scroll-target="#tests-results">Tests results :</a></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Unit Tests</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<p>I created unit tests for testing the prediction and training code using the R package <strong>testthat</strong>.</p>
+<section id="unit-tests---training" class="level1">
+<h1>Unit tests - Training</h1>
+<p>The <a href="https://github.com/tsenegas/cricketML/blob/main/tests/test_training.R" target="_blank">test_training.R</a> contains unit tests, designed to test various parts of a cricket prediction model pipeline. Here’s an explanation of each test:</p>
+<section id="prepare-data-test-prepare_data" class="level2">
+<h2 class="anchored" data-anchor-id="prepare-data-test-prepare_data">1. Prepare Data Test (prepare_data):</h2>
+<ul>
+<li>This test checks if the prepare_data function correctly splits the data into training and test sets.</li>
+<li>The prepare_data function is expected to return a list containing both train_data and test_data. The test verifies that:
+<ul>
+<li>Both train_data and test_data are present in the output.</li>
+<li>Both datasets have at least one row, ensuring that they are not empty.</li>
+</ul></li>
+</ul>
+</section>
+<section id="train-model-test-train_model" class="level2">
+<h2 class="anchored" data-anchor-id="train-model-test-train_model">2. Train Model Test (train_model):</h2>
+<ul>
+<li>This test ensures that the train_model function properly trains a model and returns a workflow object.</li>
+<li>The function train_model is provided with the train_data from the previously prepared data.</li>
+<li>The test expects the returned model object to be of class workflow (which is the object type used by the tidymodels framework to store model specifications and preprocessing steps).</li>
+</ul>
+</section>
+<section id="evaluate-model-test-evaluate_model" class="level2">
+<h2 class="anchored" data-anchor-id="evaluate-model-test-evaluate_model">3. Evaluate Model Test (evaluate_model):</h2>
+<ul>
+<li>This test checks that the evaluate_model function returns the correct evaluation metrics.</li>
+<li>The train_model function is used to train a model with train_data, and then the model is evaluated using test_data. The test expects the returned metrics to contain two columns: .metric and .estimate, which are standard outputs from yardstick::metrics used in tidymodels to store evaluation metrics.</li>
+</ul>
+</section>
+<section id="save-model-test-save_model" class="level2">
+<h2 class="anchored" data-anchor-id="save-model-test-save_model">4. Save Model Test (save_model):</h2>
+<ul>
+<li>This test verifies that the save_model function successfully saves the trained model to disk.</li>
+<li>The test trains a model using the train_model function, then saves it using the save_model function with the path mock_model.rds.</li>
+<li>After saving, the test checks if the file exists at the specified location and then deletes the file using unlink() to clean up after the test.</li>
+</ul>
+</section>
+</section>
+<section id="units-tests---predictions" class="level1">
+<h1>Units tests - Predictions</h1>
+<p>The <a href="https://github.com/tsenegas/cricketML/blob/main/tests/test_predictions.R" target="_blank">test_predictions.R</a> contains unit tests, designed to ensure that the make_predictions function works correctly in different scenarios. Here’s an explanation of each part:</p>
+<section id="valid-predict-test" class="level2">
+<h2 class="anchored" data-anchor-id="valid-predict-test">1. Valid Predict Test:</h2>
+<ul>
+<li>Purpose: This test checks that the make_predictions function returns valid predictions when provided with valid input data.</li>
+<li>Test Logic:
+<ul>
+<li>The function make_predictions is called with model_path and mock_data as inputs.</li>
+<li>It asserts that the predictions are not NULL (expect_true(!is.null(predictions))).</li>
+<li>It checks that the function returns predictions for all three rows in the mock data (expect_equal(nrow(predictions), 3)). ## 2. Invalid Team test:</li>
+</ul></li>
+<li>Purpose: This test ensures that the function handles invalid team names gracefully by raising an error.</li>
+<li>Test Logic:
+<ul>
+<li>The mock data is modified to contain an invalid team (“Invalid Team”).</li>
+<li>The test expects the make_predictions function to throw an error with the message “Invalid team(s) found in input data” when the data contains an invalid team.</li>
+</ul></li>
+</ul>
+</section>
+<section id="edge-case-test" class="level2">
+<h2 class="anchored" data-anchor-id="edge-case-test">3. Edge Case Test:</h2>
+<ul>
+<li>Purpose: This test checks how the function handles edge cases for remaining_overs and remaining_wickets, such as when they are at their maximum or minimum values.</li>
+<li>Test Logic:
+<ul>
+<li>An edge case dataset is created with rows containing remaining_overs = 50 and remaining_wickets = 10 for the maximum case, and remaining_overs = 0 and remaining_wickets = 0 for the minimum case.</li>
+<li>The test checks that the predictions are generated for both rows (expect_equal(nrow(predictions), 2)).</li>
+<li>It ensures that all predicted values are greater than or equal to 0 (expect_true(all(predictions$.pred &gt;= 0))), as negative predictions would not be valid.</li>
+</ul></li>
+</ul>
+</section>
+<section id="summary" class="level2">
+<h2 class="anchored" data-anchor-id="summary">Summary:</h2>
+<p>These tests ensure the robustness of the make_predictions function in handling:</p>
+<ul>
+<li>Valid input data (returns predictions).</li>
+<li>Invalid team names (throws an error).</li>
+<li>Edge cases where the input values are at their extremes (ensures predictions are valid and non-negative).</li>
+</ul>
+<p>These unit tests help ensure the reliability and correctness of the model’s prediction process under different scenarios.</p>
+</section>
+</section>
+<section id="tests-results" class="level1">
+<h1>Tests results :</h1>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>testthat<span class="sc">::</span><span class="fu">test_dir</span>(<span class="st">'./tests/'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: package 'testthat' was built under R version 4.4.2</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>✔ | F W  S  OK | Context
+
+⠏ |          0 | predictions                                                    
+⠋ |   1      0 | predictions                                                    [1] "Predictions for the first 5 overs of Ireland at game 1029001 :"
+# A tibble: 30 × 3
+   team    runs.total runs.predicted$.pred
+   &lt;chr&gt;        &lt;dbl&gt;                &lt;dbl&gt;
+ 1 Ireland          1                0.756
+ 2 Ireland          0                0.744
+ 3 Ireland          1                0.744
+ 4 Ireland          2                0.744
+ 5 Ireland          1                0.744
+ 6 Ireland          0                0.732
+ 7 Ireland          0                0.766
+ 8 Ireland          4                0.766
+ 9 Ireland          0                0.754
+10 Ireland          0                0.743
+11 Ireland          0                0.731
+12 Ireland          4                0.731
+13 Ireland          4                0.776
+14 Ireland          0                0.764
+15 Ireland          0                0.753
+16 Ireland          0                0.741
+17 Ireland          0                0.730
+18 Ireland          4                0.730
+19 Ireland          0                0.763
+20 Ireland          0                0.751
+21 Ireland          0                0.740
+22 Ireland          0                0.728
+23 Ireland          2                0.728
+24 Ireland          0                0.717
+25 Ireland          0                0.750
+26 Ireland          4                0.750
+27 Ireland          4                0.750
+28 Ireland          4                0.750
+29 Ireland          0                0.738
+30 Ireland          0                0.727
+
+⠙ |   1      1 | predictions                                                    
+⠸ |   1      3 | predictions                                                    
+⠼ |   1      4 | predictions                                                    
+✔ |   1      5 | predictions [7.1s]
+────────────────────────────────────────────────────────────────────────────────
+Warning ('test_predictions.R:2:1'): (code run outside of `test_that()`)
+package 'broom' was built under R version 4.4.2
+Backtrace:
+     ▆
+  1. └─base::library(tidymodels) at test_predictions.R:2:1
+  2.   ├─base::tryCatch(...)
+  3.   │ └─base (local) tryCatchList(expr, classes, parentenv, handlers)
+  4.   │   └─base (local) tryCatchOne(expr, names, parentenv, handlers[[1L]])
+  5.   │     └─base (local) doTryCatch(return(expr), name, parentenv, handler)
+  6.   └─base::attachNamespace(ns, pos = pos, deps, exclude, include.only)
+  7.     └─base (local) runHook(".onAttach", ns, dirname(nspath), nsname)
+  8.       ├─base::tryCatch(fun(libname, pkgname), error = identity)
+  9.       │ └─base (local) tryCatchList(expr, classes, parentenv, handlers)
+ 10.       │   └─base (local) tryCatchOne(expr, names, parentenv, handlers[[1L]])
+ 11.       │     └─base (local) doTryCatch(return(expr), name, parentenv, handler)
+ 12.       └─tidymodels (local) fun(libname, pkgname)
+ 13.         └─tidymodels:::tidymodels_attach()
+ 14.           ├─base::suppressPackageStartupMessages(...)
+ 15.           │ └─base::withCallingHandlers(expr, packageStartupMessage = function(c) tryInvokeRestart("muffleMessage"))
+ 16.           └─base::lapply(to_load, library, character.only = TRUE, warn.conflicts = FALSE)
+ 17.             └─base (local) FUN(X[[i]], ...)
+ 18.               └─base (local) testRversion(pkgInfo, package, pkgpath)
+────────────────────────────────────────────────────────────────────────────────
+
+⠏ |          0 | training                                                       # A tibble: 3 × 3
+  .metric .estimator .estimate
+  &lt;chr&gt;   &lt;chr&gt;          &lt;dbl&gt;
+1 rmse    standard      1.23  
+2 rsq     standard      0.0279
+3 mae     standard      0.850 
+
+⠋ |          1 | training                                                       
+⠼ |          5 | training                                                       
+⠴ |          6 | training                                                       
+⠧ |          8 | training                                                       
+✔ |          8 | training [10.8s]
+
+══ Results ═════════════════════════════════════════════════════════════════════
+Duration: 18.0 s
+
+[ FAIL 0 | WARN 1 | SKIP 0 | PASS 13 ]</code></pre>
+</div>
+</div>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const onCopySuccess = function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  }
+  const getTextToCopy = function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+    text: getTextToCopy
+  });
+  clipboard.on('success', onCopySuccess);
+  if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+    // For code content inside modals, clipBoardJS needs to be initialized with a container option
+    // TODO: Check when it could be a function (https://github.com/zenorocha/clipboard.js/issues/860)
+    const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+      text: getTextToCopy,
+      container: window.document.getElementById('quarto-embedded-source-code-modal')
+    });
+    clipboardModal.on('success', onCopySuccess);
+  }
+    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+    var mailtoRegex = new RegExp(/^mailto:/);
+      var filterRegex = new RegExp('/' + window.location.host + '/');
+    var isInternal = (href) => {
+        return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+    }
+    // Inspect non-navigation links and adorn them if external
+ 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+    for (var i=0; i<links.length; i++) {
+      const link = links[i];
+      if (!isInternal(link.href)) {
+        // undo the damage that might have been done by quarto-nav.js in the case of
+        // links that we want to consider external
+        if (link.dataset.originalHref !== undefined) {
+          link.href = link.dataset.originalHref;
+        }
+      }
+    }
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+    const config = {
+      allowHTML: true,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start',
+    };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      if (note) {
+        return note.innerHTML;
+      } else {
+        return "";
+      }
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      // TODO in 1.5, we should make sure this works without a callout special case
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+
+</body></html>
