@@ -16,9 +16,9 @@ I wanted my solution to offer two options to the user:
 
 This R script is designed to load a pre-trained model and make predictions on cricket match data. The script is divided into two main options that can be run from the command line.
 
-- **Option 1 (Demo)**: It loads a preprocessed dataset and filters it to focus on the first 5 overs of an Ireland match, using the model to predict the total runs for those overs.
+-   **Option 1 (Demo)**: It loads a preprocessed dataset and filters it to focus on the first 5 overs of an Ireland match, using the model to predict the total runs for those overs.
 
-- **Option 2 (User Dataset)**: It accepts a user-provided dataset, validates that it includes the required columns (remaining_overs, remaining_wickets, and team), and uses the model to predict the runs for each row in the dataset. The predictions are then displayed in a formatted output.
+-   **Option 2 (User Dataset)**: It accepts a user-provided dataset, validates that it includes the required columns (remaining_overs, remaining_wickets, and team), and uses the model to predict the runs for each row in the dataset. The predictions are then displayed in a formatted output.
 
 The script also includes functions to validate the teams, load the model, and make predictions. It ensures that all the required columns are present in the input data and handles errors such as missing or invalid files and columns.
 
@@ -155,9 +155,9 @@ pred_output <- predictions |>
 
 This Bash script prompts the user to select an option to either run a demo or provide their own dataset for making cricket match predictions.
 
-- Option 1: The user can run a demo with the first 5 overs of Ireland's match. If this option is chosen, the script runs the R script (run_model.R) with the argument 1.
+-   Option 1: The user can run a demo with the first 5 overs of Ireland's match. If this option is chosen, the script runs the R script (run_model.R) with the argument 1.
 
-- Option 2: The user can provide their own dataset by pasting it directly into the terminal. The script captures the data and saves it to a temporary file (/tmp/user_data.csv). It then runs the R script (run_model.R) with the argument 2 and the path to the user-provided dataset.
+-   Option 2: The user can provide their own dataset by pasting it directly into the terminal. The script captures the data and saves it to a temporary file (/tmp/user_data.csv). It then runs the R script (run_model.R) with the argument 2 and the path to the user-provided dataset.
 
 The script ensures that it stops execution on any errors (set -e) and validates the user's choice. If an invalid option is entered, the script prints an error message.
 
@@ -198,13 +198,33 @@ fi
 
 This Dockerfile sets up an environment to run an R-based cricket prediction model. Here's what each part does:
 
--   1. **Base Image**: It starts with the official r-base:4.3.0 image, which includes a minimal installation of R version 4.3.0.
--   2. **Install System Dependencies**: It installs necessary system libraries such as bash, development libraries (libcurl4, libssl, etc.), and tools (build-essential, gfortran, pkg-config). These libraries and tools are needed to compile and install R packages and other dependencies.
--   3. **Install R Packages**: The required R packages (dplyr, tidymodels, readr) are installed using the R install.packages() function. These packages are used for data manipulation, model building, and reading data in your script.
--   4. **Set Working Directory**: The working directory is set to /app. This is where the application’s files (like scripts and data) will be stored inside the container.
--   5. **Copy Files into the Container**: The necessary files (run_predictions.sh, run_model.R, simple_cricket_model.rds, processed_cricket_data.csv) are copied from the host machine into the /app directory inside the container.
--   6. **Make the Shell Script Executable**: The chmod +x command makes the run_predictions.sh script executable so that it can be run when the container starts.
--   7. **Specify the Command to Run**: Finally, the container will run the shell script (run_predictions.sh) using /bin/bash when the container starts.
+-   
+
+    1.  **Base Image**: It starts with the official r-base:4.3.0 image, which includes a minimal installation of R version 4.3.0.
+
+-   
+
+    2.  **Install System Dependencies**: It installs necessary system libraries such as bash, development libraries (libcurl4, libssl, etc.), and tools (build-essential, gfortran, pkg-config). These libraries and tools are needed to compile and install R packages and other dependencies.
+
+-   
+
+    3.  **Install R Packages**: The required R packages (dplyr, tidymodels, readr) are installed using the R install.packages() function. These packages are used for data manipulation, model building, and reading data in your script.
+
+-   
+
+    4.  **Set Working Directory**: The working directory is set to /app. This is where the application’s files (like scripts and data) will be stored inside the container.
+
+-   
+
+    5.  **Copy Files into the Container**: The necessary files (run_predictions.sh, run_model.R, simple_cricket_model.rds, processed_cricket_data.csv) are copied from the host machine into the /app directory inside the container.
+
+-   
+
+    6.  **Make the Shell Script Executable**: The chmod +x command makes the run_predictions.sh script executable so that it can be run when the container starts.
+
+-   
+
+    7.  **Specify the Command to Run**: Finally, the container will run the shell script (run_predictions.sh) using /bin/bash when the container starts.
 
 This setup allows you to containerize your R model, including the necessary dependencies and files, making it easy to deploy and run the prediction tasks in an isolated environment.
 
@@ -268,10 +288,9 @@ If you choose option 1, it will run a demonstration using the first 5 overs of I
 
 If you choose option 2, you can copy and paste your data directly into the terminal and press Ctrl+D. The model will then make predictions on your data.
 
-Below exemple of copy paste your data : 
+Below exemple of copy paste your data :
 
-![copy_paste](./paste_data.png)
-
+![](./paste_data.png)
 
 # Limitation
 

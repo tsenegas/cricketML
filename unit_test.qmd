@@ -42,8 +42,11 @@ The [test_predictions.R](https://github.com/tsenegas/cricketML/blob/main/tests/t
 -   Purpose: This test checks that the make_predictions function returns valid predictions when provided with valid input data.
 -   Test Logic:
     -   The function make_predictions is called with model_path and mock_data as inputs.
-    -   It asserts that the predictions are not NULL (expect_true(!is.null(predictions))).
-    -   It checks that the function returns predictions for all three rows in the mock data (expect_equal(nrow(predictions), 3)). \## 2. Invalid Team test:
+    -   It asserts that the predictions are not NULL.
+    -   It checks that the function returns predictions for all three rows in the mock data.
+
+## 2. Invalid Team test:
+
 -   Purpose: This test ensures that the function handles invalid team names gracefully by raising an error.
 -   Test Logic:
     -   The mock data is modified to contain an invalid team ("Invalid Team").
@@ -54,8 +57,8 @@ The [test_predictions.R](https://github.com/tsenegas/cricketML/blob/main/tests/t
 -   Purpose: This test checks how the function handles edge cases for remaining_overs and remaining_wickets, such as when they are at their maximum or minimum values.
 -   Test Logic:
     -   An edge case dataset is created with rows containing remaining_overs = 50 and remaining_wickets = 10 for the maximum case, and remaining_overs = 0 and remaining_wickets = 0 for the minimum case.
-    -   The test checks that the predictions are generated for both rows (expect_equal(nrow(predictions), 2)).
-    -   It ensures that all predicted values are greater than or equal to 0 (expect_true(all(predictions\$.pred \>= 0))), as negative predictions would not be valid.
+    -   The test checks that the predictions are generated for both rows.
+    -   It ensures that all predicted values are greater than or equal to 0 , as negative predictions would not be valid.
 
 ## Summary:
 
