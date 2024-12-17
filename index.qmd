@@ -4,7 +4,11 @@ title: "cricketML"
 
 # Executive Summary
 
-This project showcases my technical and analytical skills through the completion of a comprehensive data science assessment provided by Zelus Analytics. The assessment focuses on modeling, infrastructure design, and deployment, using ball-by-ball data from professional cricket matches.
+This project showcases my technical and analytical skills through the completion of a comprehensive data science assessment provided by Teamworks / Zelus Analytics. The assessment focuses on modeling, infrastructure design, and deployment, using ball-by-ball data from professional cricket matches.
+
+I truly enjoyed working on this exercise. As I am not used to deploying models for local use, I found it very interesting to rediscover some functionalities. My usual experience involves deploying models and web applications (primarily in R Shiny) via Docker, with API calls directly to servers.
+
+I am very excited about the possibility of continuing the recruitment process with Teamworks/Zelus Analytics, if the opportunity arises. I would also like to highlight that I have a strong expertise in R Shiny. From posts I saw from Christopher Pickard, I understand that the Soccer team is looking for engineers and data scientists working in R/R Shiny, which are my primary areas of expertise. That said, I am open to joining any team within Teamworks/Zelus Analytics.
 
 ## Key Objectives
 
@@ -43,18 +47,29 @@ Here are my intermediate data after first cleaning :
 
 You can show in details my code and explanation to went from raw data to that dataset [here](data_processing.html)
 
+You can also access the RScript directly on my GitHub repo - [data_processing.R](https://github.com/tsenegas/cricketML/blob/main/scripts/data_processing.R){target="_blank"}
+
 ## Question 3.b
 
 We've created a very basic and simple ML model to predict an average team's expected runs per over. Find the code and explanation [here](data_modelling.html)
+
+You can also access the RScript directly on my GitHub repo - [data_modelling.R](https://github.com/tsenegas/cricketML/blob/main/scripts/data_modelling.R){target="_blank"}
 
 ## Question 4
 
 You can download docker's image [here](https://drive.google.com/file/d/1Kt6CoYZN8JRBK-qJ5XpgYzneA4UDi9Gk/view?usp=sharing){target="_blank"}
 
-Once downloaded, upload the image on your computer and run it - on that image, the model will run and make predictions for the first 5 Ireland overs and display prediction results to stdout.
+Once downloaded, upload the image on your computer and run it - there are some pre requis :
+- You need to have docker.desktop (For Windows or Mac depending of your OS / Get Docker Engine on Linux)
+- On your cmd invit, navigate to the folder where you download the docker image and type : docker load -i cricket_model.tar
+- from your cmd invit, type docker run --rm -it cricket_model (you need to put -it, as you will need to select options)
+
+Running the docker's image, you will have two options :
+- 1. Run the demo
+- 2. Run on your datas
 
 For more explanation to see the process to create the image and to run it, you can take a look [there](deployment.html)
 
 ## Question 5
 
-I built some unit tests for my prediction and training code. Check them [there](unit_test.html)
+I built some unit tests for my prediction and training code. Check them [here](unit_test.html)

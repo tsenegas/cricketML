@@ -2,3 +2,76 @@
 title: "Unit Tests"
 format: html
 ---
+
+I  created unit tests for testing the prediction and training code using the R package **testthat**.
+
+# Unit tests - Training
+
+The [test_training.R](https://github.com/tsenegas/cricketML/blob/main/tests/test_training.R){target="_blank"} contains unit tests, designed to test various parts of a cricket prediction model pipeline. Here's an explanation of each test:
+
+## 1. Prepare Data Test (prepare_data):
+
+- This test checks if the prepare_data function correctly splits the data into training and test sets.
+- The prepare_data function is expected to return a list containing both train_data and test_data. The test verifies that:
+    - Both train_data and test_data are present in the output.
+    - Both datasets have at least one row, ensuring that they are not empty.
+
+## 2. Train Model Test (train_model):
+
+- This test ensures that the train_model function properly trains a model and returns a workflow object.
+- The function train_model is provided with the train_data from the previously prepared data.
+- The test expects the returned model object to be of class workflow (which is the object type used by the tidymodels framework to store model specifications and preprocessing steps).
+
+## 3. Evaluate Model Test (evaluate_model):
+
+- This test checks that the evaluate_model function returns the correct evaluation metrics.
+- The train_model function is used to train a model with train_data, and then the model is evaluated using test_data.
+The test expects the returned metrics to contain two columns: .metric and .estimate, which are standard outputs from yardstick::metrics used in tidymodels to store evaluation metrics.
+
+## 4. Save Model Test (save_model):
+
+- This test verifies that the save_model function successfully saves the trained model to disk.
+- The test trains a model using the train_model function, then saves it using the save_model function with the path mock_model.rds.
+- After saving, the test checks if the file exists at the specified location and then deletes the file using unlink() to clean up after the test.
+
+# Units tests - Predictions
+
+The [test_predictions.R](https://github.com/tsenegas/cricketML/blob/main/tests/test_predictions.R){target="_blank"} contains unit tests, designed  to ensure that the make_predictions function works correctly in different scenarios. Here's an explanation of each part:
+
+## 1. Valid Predict Test: 
+
+- Purpose: This test checks that the make_predictions function returns valid predictions when provided with valid input data.
+- Test Logic:
+    - The function make_predictions is called with model_path and mock_data as inputs.
+    - It asserts that the predictions are not NULL (expect_true(!is.null(predictions))).
+    - It checks that the function returns predictions for all three rows in the mock data (expect_equal(nrow(predictions), 3)).
+## 2. Invalid Team test:
+
+- Purpose: This test ensures that the function handles invalid team names gracefully by raising an error.
+- Test Logic:
+    - The mock data is modified to contain an invalid team ("Invalid Team").
+    - The test expects the make_predictions function to throw an error with the message "Invalid team(s) found in input data" when the data contains an invalid team.
+
+## 3. Edge Case Test:
+
+- Purpose: This test checks how the function handles edge cases for remaining_overs and remaining_wickets, such as when they are at their maximum or minimum values.
+- Test Logic:
+    - An edge case dataset is created with rows containing remaining_overs = 50 and remaining_wickets = 10 for the maximum case, and remaining_overs = 0 and remaining_wickets = 0 for the minimum case.
+    - The test checks that the predictions are generated for both rows (expect_equal(nrow(predictions), 2)).
+    - It ensures that all predicted values are greater than or equal to 0 (expect_true(all(predictions$.pred >= 0))), as negative predictions would not be valid.
+
+## Summary:
+
+These tests ensure the robustness of the make_predictions function in handling:
+
+- Valid input data (returns predictions).
+- Invalid team names (throws an error).
+- Edge cases where the input values are at their extremes (ensures predictions are valid and non-negative).
+
+These unit tests help ensure the reliability and correctness of the model's prediction process under different scenarios.
+
+# Tests results :
+
+```{r}
+testthat::test_dir('./tests/')
+```

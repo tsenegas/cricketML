@@ -3,6 +3,63 @@ title: "Data Processing"
 format: html
 ---
 
+Below, you will find a brief explanation of the world, as it is rather simple.
+
+# Loading Packages and Data
+
+Please note that I moved the innings_results.json file out of my Git folder, as it was too large to be pushed to GitHub due to the size limit.
+
+```{r eval = FALSE}
+# Load required libraries
+library(dplyr)
+library(jsonlite)
+
+# Read raw Json files
+match_data = jsonlite::fromJSON('./data/match_results.json')
+innings_data = jsonlite::fromJSON('../../cricketML_data/innings_results.json')
+```
+
+# Find games with an outcome different than 'no results'
+
+We examine all the games that have an outcome different from 'no results' and filter the innings_data to keep only the relevant games.
+
+```{r eval = FALSE}
+# Process the data for Q3a
+# Step 1: Filter out no-result matches
+valid_match_ids <- match_data |> 
+  dplyr::filter(is.na(result) | result == 'tie') |> 
+  dplyr::pull(matchid) |> 
+  unique()
+
+# Step 2: Filter innings data to include only valid matches
+filtered_innings <- innings_data |> 
+  dplyr::filter(matchid %in% valid_match_ids)
+```
+
+# Cleaning and Processing the Data
+
+Here, we clean and process the data to prepare it for our model. Since my knowledge of cricket is limited and the assessment focuses more on the deployment of an ML model, I will primarily use only two features: **remaining_overs** and **remaining_wickets** as variables.
+
+```{r eval = FALSE}
+# Step 3: Add remaining overs and remaining wickets
+processed_innings <- filtered_innings |> 
+  group_by(matchid, team) |> 
+  mutate(
+    over_number = floor(as.numeric(over)), # Extract the integer part of over (e.g., 0.1 becomes 0)
+    remaining_overs = 50 - over_number, # Calculate remaining overs (assuming 50 overs max)
+    remaining_wickets = 10 - cumsum(!is.na(wicket.player_out)), # Count dismissals cumulatively
+    inning_order = innings # Keep innings column for clarity
+  ) |> 
+  select(team, inning_order, remaining_overs, remaining_wickets, matchid)
+
+# save as csv
+write.csv(processed_innings, "data/processed_innings.csv", row.names = FALSE)
+
+```
+
+
+# TL;DR
+
 ```{r eval = FALSE}
 # Load required libraries
 library(dplyr)

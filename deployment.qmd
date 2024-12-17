@@ -3,7 +3,268 @@ title: "question4"
 format: html
 ---
 
-1.  Download docker image .tar
-2.  Open a Terminal Navigate to the directory where cricket_model.tar is located
+I will describe how I packaged a solution to build, deploy, and run my model locally.
 
-cd /path/to/cricket_model.tarcd /path/to/cricket_model.tar
+I decided to use Docker, so the only requirement to run my model locally is having Docker Desktop if you are using Windows or macOS, or Docker Engine if you are using Linux.
+
+I wanted my solution to offer two options to the user:
+
+- Run a demonstration where I make predictions for the first 5 overs of Ireland's match and display the results to stdout.
+- Run the model on your own data.
+
+# 1. run_model.R
+
+This R script is designed to load a pre-trained model and make predictions on cricket match data. The script is divided into two main options that can be run from the command line.
+
+Option 1 (Demo): It loads a preprocessed dataset and filters it to focus on the first 5 overs of an Ireland match, using the model to predict the total runs for those overs.
+
+Option 2 (User Dataset): It accepts a user-provided dataset, validates that it includes the required columns (remaining_overs, remaining_wickets, and team), and uses the model to predict the runs for each row in the dataset. The predictions are then displayed in a formatted output.
+
+The script also includes functions to validate the teams, load the model, and make predictions. It ensures that all the required columns are present in the input data and handles errors such as missing or invalid files and columns.
+
+```{r eval = FALSE}
+#!/usr/bin/env Rscript
+
+# Load required libraries
+suppressPackageStartupMessages({
+  library(dplyr)
+  library(tidymodels)
+  library(readr)
+})
+
+# Load the model
+model_path <- "simple_cricket_model.rds"
+
+# Load the processed data
+data_path <- "processed_cricket_data.csv"
+processed_data <- read_csv(data_path)
+
+
+# Define valid teams (to avoid dependency on processed data directly)
+get_valid_teams <- function(processed_data_path) {
+  processed_data <- read_csv(data_path)
+  return(unique(processed_data$team))
+}
+
+# Function to make predictions
+make_predictions <- function(new_data, model_path, valid_teams = get_valid_teams()) {
+  # Load the model
+  model <- readRDS(model_path)
+  
+  # Validate input data
+  if (!all(new_data$team %in% valid_teams)) {
+    stop("Invalid team(s) found in input data")
+  }
+  
+  # Make predictions
+  predictions <- new_data |> 
+    mutate(predicted_runs = predict(model, new_data = new_data))
+  
+  return(predictions)
+}
+
+# Parse command-line arguments
+args <- commandArgs(trailingOnly = TRUE)
+
+# Validate arguments
+if (length(args) < 1) {
+  cat("Error: Missing arguments.\n")
+  cat("Usage:\n")
+  cat("   Rscript run_model.R 1\n")
+  cat("   Rscript run_model.R 2 /path/to/your_dataset.csv\n")
+  stop("Execution halted.")
+}
+
+option <- args[1]
+
+# Option 1: Run the demo
+if (option == "1") {
+  cat("\nRunning demo with the first 5 Ireland overs...\n")
+  
+  # Load the processed data
+  processed_data <- read_csv(data_path, show_col_types = FALSE)
+  
+# Filter for the first 5 overs by Ireland
+ireland_data <- processed_data |> 
+  filter(team == "Ireland") |>    
+  filter(remaining_overs > 45) |>
+  filter(matchid == matchid[1]) # Keep only first 5 Ireland overs for the first game we have in data
+
+predictions <- make_predictions(new_data = ireland_data, model_path, get_valid_teams())
+
+colnames(predictions)[7] = 'runs.predicted'
+
+pred_output <- predictions |> 
+  select(team, runs.total, runs.predicted)
+
+  cat("\nPredictions for the first 5 overs of Ireland at game 1029001:\n")
+  print(pred_output, n = 30)
+
+# Option 2: User-provided dataset
+} else if (option == "2") {
+  # Check if dataset path is provided
+  if (length(args) < 2) {
+    stop("Error: Please provide the path to your dataset.\nUsage: Rscript run_model.R 2 /path/to/your_dataset.csv")
+  }
+  
+  input_path <- args[2]
+  
+  # Validate file existence
+  if (!file.exists(input_path)) {
+    stop("Error: File not found. Please provide a valid file path.")
+  }
+  
+  cat("\nLoading user-provided dataset...\n")
+  
+  # Load the user-provided dataset
+  user_data <- read_csv(input_path, show_col_types = FALSE)
+
+  # Required columns
+  required_columns <- c("remaining_overs", "remaining_wickets", "team")
+  
+  # Check for missing columns
+  missing_columns <- setdiff(required_columns, colnames(user_data))
+  if (length(missing_columns) > 0) {
+    cat("Error: The following required columns are missing from your dataset:\n")
+    cat(paste(missing_columns, collapse = ", "), "\n")
+    cat("Please ensure that your dataset includes at least the following columns:\n")
+    cat(paste(required_columns, collapse = ", "), "\n")
+    stop("Execution halted.")
+  }
+  
+  
+  # Make predictions
+  predictions <- make_predictions(new_data = user_data, model_path, get_valid_teams())
+  
+  # Format and display predictions
+  pred_output <- predictions |> 
+    select(team, predicted_runs)
+
+  cat("\nModel Predictions:\n")
+  print(pred_output, n = 30)
+
+# Invalid Option
+} else {
+  stop("Invalid option. Please use 1 for demo or 2 to provide a dataset.")
+}
+
+}
+```
+
+# 2. run_prediction.sh
+
+This Bash script prompts the user to select an option to either run a demo or provide their own dataset for making cricket match predictions.
+
+Option 1: The user can run a demo with the first 5 overs of Ireland's match. If this option is chosen, the script runs the R script (run_model.R) with the argument 1.
+
+Option 2: The user can provide their own dataset by pasting it directly into the terminal. The script captures the data and saves it to a temporary file (/tmp/user_data.csv). It then runs the R script (run_model.R) with the argument 2 and the path to the user-provided dataset.
+
+The script ensures that it stops execution on any errors (set -e) and validates the user's choice. If an invalid option is entered, the script prints an error message.
+
+```{bash eval = FALSE}
+#!/bin/bash
+
+# Ensure the script stops on errors
+set -e
+
+# Set the path to your R script
+R_SCRIPT="run_model.R"
+
+# Prompt the user for input
+echo "Please select an option:"
+echo "1: Run a demo with the first 5 Ireland overs"
+echo "2: Provide your own dataset"
+
+# Read the user's input
+read -p "Enter your choice (1 or 2): " user_choice
+
+# Based on the input, run the R script with the appropriate argument
+if [ "$user_choice" == "1" ]; then
+  Rscript $R_SCRIPT 1
+elif [ "$user_choice" == "2" ]; then
+ echo "Paste your data (separate by comma) directly (Ctrl+D to finish):"
+
+  cat > /tmp/user_data.csv
+  
+  # Run the R script with the uploaded dataset
+  Rscript $R_SCRIPT 2 /tmp/user_data.csv
+else
+  echo "Invalid option. Please enter 1 or 2."
+fi
+
+```
+
+
+# 3. dockerfile
+
+This Dockerfile sets up an environment to run an R-based cricket prediction model. Here's what each part does:
+
+- 1.**Base Image**: It starts with the official r-base:4.3.0 image, which includes a minimal installation of R version 4.3.0.
+- 2.**Install System Dependencies**: It installs necessary system libraries such as bash, development libraries (libcurl4, libssl, etc.), and tools (build-essential, gfortran, pkg-config). These libraries and tools are needed to compile and install R packages and other dependencies.
+- 3.**Install R Packages**: The required R packages (dplyr, tidymodels, readr) are installed using the R install.packages() function. These packages are used for data manipulation, model building, and reading data in your script.
+- 4.**Set Working Directory**: The working directory is set to /app. This is where the application’s files (like scripts and data) will be stored inside the container.
+- 5.**Copy Files into the Container**: The necessary files (run_predictions.sh, run_model.R, simple_cricket_model.rds, processed_cricket_data.csv) are copied from the host machine into the /app directory inside the container.
+- 6.**Make the Shell Script Executable**: The chmod +x command makes the run_predictions.sh script executable so that it can be run when the container starts.
+- 7.**Specify the Command to Run**: Finally, the container will run the shell script (run_predictions.sh) using /bin/bash when the container starts.
+
+This setup allows you to containerize your R model, including the necessary dependencies and files, making it easy to deploy and run the prediction tasks in an isolated environment.
+
+```{dockerfile eval = FALSE}
+# Use the official R base image
+FROM r-base:4.3.0
+
+# Install bash and required system dependencies
+RUN apt-get update && apt-get install -y \
+    bash \
+    libcurl4-openssl-dev \
+    libssl-dev \
+    libxml2-dev \
+    libfreetype6-dev \
+    libfontconfig1-dev \
+    libpng-dev \
+    libtiff5-dev \
+    libjpeg-dev \
+    build-essential \
+    gfortran \
+    pkg-config
+
+
+# Install required R packages
+RUN R -e "install.packages(c('dplyr', 'tidymodels', 'readr'), repos='https://cloud.r-project.org/')"
+
+
+# Set the working directory
+WORKDIR /app
+
+# Copy files into the container
+COPY run_predictions.sh /app/
+COPY run_model.R /app/
+COPY simple_cricket_model.rds /app/
+COPY processed_cricket_data.csv /app/
+
+# Make the shell script executable
+RUN chmod +x /app/run_predictions.sh
+
+# Specify the command to run the script
+CMD ["/bin/bash", "-c", "./run_predictions.sh"]
+
+```
+
+# 4.Download docker image / upload it / Run it
+
+You can download the docker image [here](https://drive.google.com/file/d/1Kt6CoYZN8JRBK-qJ5XpgYzneA4UDi9Gk/view?usp=sharing){target="_blank"}
+
+When running the image, you may need to specify -it as you will be prompted to enter a choice in the command-line interface.
+
+```{bash eval = FALSE}
+# Upload the image (make sure Docker Desktop is open and/or running)
+docker load -i cricket_model.tar
+
+# Run the image
+docker run --rm -it cricket_model
+
+```
+
+If you choose option 1, it will run a demonstration using the first 5 overs of Ireland's match and display the results to stdout.
+
+If you choose option 2, you can copy and paste your data directly into the terminal and press Ctrl+D. The model will then make predictions on your data.
