@@ -72,3 +72,5 @@ These unit tests help ensure the reliability and correctness of the model's pred
 ```{r}
 testthat::test_dir('./tests/')
 ```
+
+"I got two warnings due to two packages installed on a different R version, but all tests work smoothly.
