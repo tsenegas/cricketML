@@ -270,7 +270,7 @@ If you choose option 2, you can copy and paste your data directly into the termi
 
 Below exemple of copy paste your data : 
 
-![copy_paste]("./paste_data.png")
+![copy_paste](./paste_data.png)
 
 
 # Limitation
