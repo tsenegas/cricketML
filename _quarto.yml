@@ -19,6 +19,8 @@ website:
       - href: unit_test.qmd
         text: Unit Tests (Q5)    
     right:
+      - icon: github
+        href: https://github.com/tsenegas/cricketML
       - about.qmd
             
 
