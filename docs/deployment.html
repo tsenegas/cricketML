@@ -168,6 +168,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#run_prediction.sh" id="toc-run_prediction.sh" class="nav-link" data-scroll-target="#run_prediction.sh">2. run_prediction.sh</a></li>
   <li><a href="#dockerfile" id="toc-dockerfile" class="nav-link" data-scroll-target="#dockerfile">3. dockerfile</a></li>
   <li><a href="#download-docker-image-upload-it-run-it" id="toc-download-docker-image-upload-it-run-it" class="nav-link" data-scroll-target="#download-docker-image-upload-it-run-it">4.Download docker image / upload it / Run it</a></li>
+  <li><a href="#limitation" id="toc-limitation" class="nav-link" data-scroll-target="#limitation">Limitation</a></li>
   </ul>
 </nav>
     </div>
@@ -203,8 +204,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="run_model.r" class="level1">
 <h1>1. run_model.R</h1>
 <p>This R script is designed to load a pre-trained model and make predictions on cricket match data. The script is divided into two main options that can be run from the command line.</p>
-<p>Option 1 (Demo): It loads a preprocessed dataset and filters it to focus on the first 5 overs of an Ireland match, using the model to predict the total runs for those overs.</p>
-<p>Option 2 (User Dataset): It accepts a user-provided dataset, validates that it includes the required columns (remaining_overs, remaining_wickets, and team), and uses the model to predict the runs for each row in the dataset. The predictions are then displayed in a formatted output.</p>
+<ul>
+<li><p><strong>Option 1 (Demo)</strong>: It loads a preprocessed dataset and filters it to focus on the first 5 overs of an Ireland match, using the model to predict the total runs for those overs.</p></li>
+<li><p><strong>Option 2 (User Dataset)</strong>: It accepts a user-provided dataset, validates that it includes the required columns (remaining_overs, remaining_wickets, and team), and uses the model to predict the runs for each row in the dataset. The predictions are then displayed in a formatted output.</p></li>
+</ul>
 <p>The script also includes functions to validate the teams, load the model, and make predictions. It ensures that all the required columns are present in the input data and handles errors such as missing or invalid files and columns.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co">#!/usr/bin/env Rscript</span></span>
@@ -338,8 +341,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="run_prediction.sh" class="level1">
 <h1>2. run_prediction.sh</h1>
 <p>This Bash script prompts the user to select an option to either run a demo or provide their own dataset for making cricket match predictions.</p>
-<p>Option 1: The user can run a demo with the first 5 overs of Ireland’s match. If this option is chosen, the script runs the R script (run_model.R) with the argument 1.</p>
-<p>Option 2: The user can provide their own dataset by pasting it directly into the terminal. The script captures the data and saves it to a temporary file (/tmp/user_data.csv). It then runs the R script (run_model.R) with the argument 2 and the path to the user-provided dataset.</p>
+<ul>
+<li><p>Option 1: The user can run a demo with the first 5 overs of Ireland’s match. If this option is chosen, the script runs the R script (run_model.R) with the argument 1.</p></li>
+<li><p>Option 2: The user can provide their own dataset by pasting it directly into the terminal. The script captures the data and saves it to a temporary file (/tmp/user_data.csv). It then runs the R script (run_model.R) with the argument 2 and the path to the user-provided dataset.</p></li>
+</ul>
 <p>The script ensures that it stops execution on any errors (set -e) and validates the user’s choice. If an invalid option is entered, the script prints an error message.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb2"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co">#!/bin/bash</span></span>
@@ -377,13 +382,27 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <h1>3. dockerfile</h1>
 <p>This Dockerfile sets up an environment to run an R-based cricket prediction model. Here’s what each part does:</p>
 <ul>
-<li>1.<strong>Base Image</strong>: It starts with the official r-base:4.3.0 image, which includes a minimal installation of R version 4.3.0.</li>
-<li>2.<strong>Install System Dependencies</strong>: It installs necessary system libraries such as bash, development libraries (libcurl4, libssl, etc.), and tools (build-essential, gfortran, pkg-config). These libraries and tools are needed to compile and install R packages and other dependencies.</li>
-<li>3.<strong>Install R Packages</strong>: The required R packages (dplyr, tidymodels, readr) are installed using the R install.packages() function. These packages are used for data manipulation, model building, and reading data in your script.</li>
-<li>4.<strong>Set Working Directory</strong>: The working directory is set to /app. This is where the application’s files (like scripts and data) will be stored inside the container.</li>
-<li>5.<strong>Copy Files into the Container</strong>: The necessary files (run_predictions.sh, run_model.R, simple_cricket_model.rds, processed_cricket_data.csv) are copied from the host machine into the /app directory inside the container.</li>
-<li>6.<strong>Make the Shell Script Executable</strong>: The chmod +x command makes the run_predictions.sh script executable so that it can be run when the container starts.</li>
-<li>7.<strong>Specify the Command to Run</strong>: Finally, the container will run the shell script (run_predictions.sh) using /bin/bash when the container starts.</li>
+<li><ol type="1">
+<li><strong>Base Image</strong>: It starts with the official r-base:4.3.0 image, which includes a minimal installation of R version 4.3.0.</li>
+</ol></li>
+<li><ol start="2" type="1">
+<li><strong>Install System Dependencies</strong>: It installs necessary system libraries such as bash, development libraries (libcurl4, libssl, etc.), and tools (build-essential, gfortran, pkg-config). These libraries and tools are needed to compile and install R packages and other dependencies.</li>
+</ol></li>
+<li><ol start="3" type="1">
+<li><strong>Install R Packages</strong>: The required R packages (dplyr, tidymodels, readr) are installed using the R install.packages() function. These packages are used for data manipulation, model building, and reading data in your script.</li>
+</ol></li>
+<li><ol start="4" type="1">
+<li><strong>Set Working Directory</strong>: The working directory is set to /app. This is where the application’s files (like scripts and data) will be stored inside the container.</li>
+</ol></li>
+<li><ol start="5" type="1">
+<li><strong>Copy Files into the Container</strong>: The necessary files (run_predictions.sh, run_model.R, simple_cricket_model.rds, processed_cricket_data.csv) are copied from the host machine into the /app directory inside the container.</li>
+</ol></li>
+<li><ol start="6" type="1">
+<li><strong>Make the Shell Script Executable</strong>: The chmod +x command makes the run_predictions.sh script executable so that it can be run when the container starts.</li>
+</ol></li>
+<li><ol start="7" type="1">
+<li><strong>Specify the Command to Run</strong>: Finally, the container will run the shell script (run_predictions.sh) using /bin/bash when the container starts.</li>
+</ol></li>
 </ul>
 <p>This setup allows you to containerize your R model, including the necessary dependencies and files, making it easy to deploy and run the prediction tasks in an isolated environment.</p>
 <div class="cell">
@@ -428,7 +447,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </section>
 <section id="download-docker-image-upload-it-run-it" class="level1">
 <h1>4.Download docker image / upload it / Run it</h1>
-<p>You can download the docker image <a href="https://drive.google.com/file/d/1Kt6CoYZN8JRBK-qJ5XpgYzneA4UDi9Gk/view?usp=sharing" target="_blank">here</a></p>
+<p>You can download the docker image <a href="https://drive.google.com/file/d/1aO6sgYZeBRZhDNS_JWJbTGVjdkE4dAZJ/view?usp=sharing" target="_blank">here</a></p>
 <p>When running the image, you may need to specify -it as you will be prompted to enter a choice in the command-line interface.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb4"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Upload the image (make sure Docker Desktop is open and/or running)</span></span>
@@ -439,6 +458,17 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 <p>If you choose option 1, it will run a demonstration using the first 5 overs of Ireland’s match and display the results to stdout.</p>
 <p>If you choose option 2, you can copy and paste your data directly into the terminal and press Ctrl+D. The model will then make predictions on your data.</p>
+<p>Below exemple of copy paste your data :</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="&quot;./paste_data.png&quot;" class="img-fluid figure-img"></p>
+<figcaption>copy_paste</figcaption>
+</figure>
+</div>
+</section>
+<section id="limitation" class="level1">
+<h1>Limitation</h1>
+<p>I’m limited to copying and pasting csv directly. An improvement would be to allow the user to enter his path to his .csv or .json file.</p>
 
 
 </section>
