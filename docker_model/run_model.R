@@ -1,9 +1,11 @@
 #!/usr/bin/env Rscript
 
 # Load required libraries
-library(dplyr)
-library(tidymodels)
-library(readr)
+suppressPackageStartupMessages({
+  library(dplyr)
+  library(tidymodels)
+  library(readr)
+})
 
 # Load the model
 model_path <- "simple_cricket_model.rds"
