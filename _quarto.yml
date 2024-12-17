@@ -8,6 +8,8 @@ website:
     left:
       - href: index.qmd
         text: Home
+      - href: architecture.qmd
+        text: IT Architecture  
       - href: data_processing.qmd
         text: Data Processing (Q3a) 
       - href: data_modelling.qmd

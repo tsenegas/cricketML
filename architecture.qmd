@@ -81,6 +81,6 @@ format: html
 [Data Sources] → [S3] → [Glue] → [SageMaker (Training)] → [S3/Snowflake]
                             ↓                        ↘
                          [AWS Batch (Inference)]     ↘
-                              ↓                       ↘
-                        [S3/Snowflake] → [Visualization (Streamlit)]
+                              ↓                      ↘
+                        [S3/Snowflake] → [Visualization ( RShiny / Streamlit)]
 ```
