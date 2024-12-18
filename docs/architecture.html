@@ -194,8 +194,11 @@ ul.task-list li input[type="checkbox"] {
 <ul>
 <li>Amazon SageMaker:
 <ul>
-<li>Train models using SageMaker’s built-in resources.</li>
-<li>Use a dedicated instance with 8 cores and large memory for the 8-hour training sessions.</li>
+<li>Train models using SageMaker’s built-in resources. (we could use an instance such as <em>ml.m54xlarge</em>):
+<ul>
+<li>This instance has 8 vCPUs and 64 GB of memory, matching the requirements.</li>
+</ul></li>
+<li>Data can be preprocessed or queried directly from Snowflake or Databricks for large-scale analytics.</li>
 <li>Store training metrics and artifacts in S3.</li>
 </ul></li>
 </ul>
@@ -206,8 +209,12 @@ ul.task-list li input[type="checkbox"] {
 <li>AWS Batch:
 <ul>
 <li>Schedule batch jobs for overnight predictions (50 games/day).</li>
-<li>Each game prediction requires a single CPU and 4 GB of memory for 60 minutes.</li>
+<li>use an instance type <em>fargate</em> or <em>m5.large</em>:
+<ul>
+<li>AWS Batch can scale horizontally to process multiple games concurrently.</li>
+</ul></li>
 <li>Use Compute Environment configurations to scale EC2 resources for optimal cost-efficiency.</li>
+<li>Predictions are stored back to Snowflake or S3 for downstream analysis.</li>
 </ul></li>
 </ul>
 </section>
@@ -216,8 +223,8 @@ ul.task-list li input[type="checkbox"] {
 <ul>
 <li>Snowflake:
 <ul>
-<li>Store structured data (aggregated predictions, historical data) for analytical queries.</li>
-<li>ntegration with S3 for seamless data loading and querying.</li>
+<li>Store structured data (aggregated predictions, historical data) for analytical queries and reporting.</li>
+<li>Integration with S3 for seamless data loading and querying.</li>
 </ul></li>
 </ul>
 </section>
@@ -240,6 +247,7 @@ ul.task-list li input[type="checkbox"] {
 <ul>
 <li>R Shiny or Streamlit:
 <ul>
+<li>Connect R Shiny or Streamlit to Snowflake</li>
 <li>Deploy a visualization app to present model outputs, trends, and performance metrics.</li>
 <li>Host the app using a dockerized solution (shinyproxy works nicely)</li>
 </ul></li>

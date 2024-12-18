@@ -62,6 +62,7 @@ You can download docker's image [here](https://drive.google.com/file/d/1aO6sgYZe
 Once downloaded, upload the image on your computer and run it - there are some pre requis : - You need to have docker.desktop (For Windows or Mac depending of your OS / Get Docker Engine on Linux) - On your cmd invit, navigate to the folder where you download the docker image and type : docker load -i cricket_model.tar - from your cmd invit, type docker run --rm -it cricket_model (you need to put -it, as you will need to select options)
 
 Running the docker's image, you will have two options :
+
 - 1. Run the demo
 - 2. Run on your datas
 
@@ -71,22 +72,25 @@ For more explanation to see the process to create the image and to run it, you c
 
 I built some unit tests for my prediction and training code. Check them [here](unit_test.html)
 
-
 # Set-up
 
 Here's the set-up to reproduce the same conditions
 
-- Platform: x86_64-w64-mingw32/x64
-- Running under: Windows 11 x64 (build 22631)
+-   Platform: x86_64-w64-mingw32/x64
 
-- Install R version 4.4.1 - [Install R 4.4.1](https://cran.r-project.org/bin/windows/base/)
-- Install Python 3.12.16 - [Install Python 3.12.16](https://www.python.org/downloads/release/python-3120/)
-- Install the latest Visual C++ Redistributable - [Windows Visual C++ Redistributable Version](https://learn.microsoft.com/en-us/cpp/windows/latest-supported-vc-redist?view=msvc-170#latest-microsoft-visual-c-redistributable-version)
-- Install Positron IDE - [Positron](https://github.com/posit-dev/positron/releases)
-- Docker Desktop for Windons (AMD64) - [Docker Desktop](https://www.docker.com/get-started/)
+-   Running under: Windows 11 x64 (build 22631)
+
+-   Install R version 4.4.1 - [Install R 4.4.1](https://cran.r-project.org/bin/windows/base/)
+
+-   Install Python 3.12.16 - [Install Python 3.12.16](https://www.python.org/downloads/release/python-3120/)
+
+-   Install the latest Visual C++ Redistributable - [Windows Visual C++ Redistributable Version](https://learn.microsoft.com/en-us/cpp/windows/latest-supported-vc-redist?view=msvc-170#latest-microsoft-visual-c-redistributable-version)
+
+-   Install Positron IDE - [Positron](https://github.com/posit-dev/positron/releases)
+
+-   Docker Desktop for Windons (AMD64) - [Docker Desktop](https://www.docker.com/get-started/)
 
 You can also access the whole git for this project [here](https://github.com/tsenegas/cricketML) and install all the packages used using renv, see code below:
-
 
 ```{r eval=FALSE}
 install.packages("renv")

@@ -35,7 +35,7 @@ prepare_data <- function(data_path, split_ratio = 0.8) {
 
 # Train the model
 
- I define a function called train_model to train a linear regression model using the tidymodels framework. First, I specify the linear regression model with the linear_reg function and set it to use the "lm" engine for regression. Then, I create a recipe to preprocess the data, focusing on the features remaining_overs and remaining_wickets to predict runs.total. I combine the recipe and model specification into a workflow, which is then fitted to the training data. The function returns the trained model, ready for evaluation or prediction.
+I define a function called train_model to train a linear regression model using the tidymodels framework. First, I specify the linear regression model with the linear_reg function and set it to use the "lm" engine for regression. Then, I create a recipe to preprocess the data, focusing on the features remaining_overs and remaining_wickets to predict runs.total. I combine the recipe and model specification into a workflow, which is then fitted to the training data. The function returns the trained model, ready for evaluation or prediction.
 
 ```{r eval = FALSE}
 # Function: Train the model
@@ -61,7 +61,6 @@ train_model <- function(train_data) {
 }
 ```
 
-
 # Evaluate the model
 
 I define a function called evaluate_model to assess the performance of the trained model. The function takes the trained model and the test data as input. It makes predictions on the test data, combines the predicted values with the actual test data, and then computes performance metrics, such as RMSE, R-squared, and MAE, using the metrics function. The function returns the evaluation results, providing insights into how well the model performs on unseen data.
@@ -78,7 +77,6 @@ evaluate_model <- function(model, test_data) {
 }
 ```
 
-
 # Save the model
 
 I define a function called save_model to save the trained model to disk. The function takes the model and an output file path as inputs, and then uses the saveRDS function to save the model as an .RDS file. This allows the model to be easily loaded and reused later without needing to retrain it.
@@ -90,6 +88,11 @@ save_model <- function(model, output_path) {
 }
 
 ```
+
+# Limitations
+
+Here, we present a very simplistic model. It is evident that to build a more performant model, we would need to incorporate more variables and perform feature engineering. In a scenario where model performance is of greater importance, I would have leaned toward using a gradient boosting model, or at the very least, a Lasso/Ridge regression.
+
 
 # TL;DR
 

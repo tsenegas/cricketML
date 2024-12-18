@@ -177,6 +177,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#train-the-model" id="toc-train-the-model" class="nav-link" data-scroll-target="#train-the-model">Train the model</a></li>
   <li><a href="#evaluate-the-model" id="toc-evaluate-the-model" class="nav-link" data-scroll-target="#evaluate-the-model">Evaluate the model</a></li>
   <li><a href="#save-the-model" id="toc-save-the-model" class="nav-link" data-scroll-target="#save-the-model">Save the model</a></li>
+  <li><a href="#limitations" id="toc-limitations" class="nav-link" data-scroll-target="#limitations">Limitations</a></li>
   <li><a href="#tldr" id="toc-tldr" class="nav-link" data-scroll-target="#tldr">TL;DR</a></li>
   </ul>
 </nav>
@@ -282,6 +283,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">saveRDS</span>(model, <span class="at">file =</span> output_path)</span>
 <span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
+</section>
+<section id="limitations" class="level1">
+<h1>Limitations</h1>
+<p>Here, we present a very simplistic model. It is evident that to build a more performant model, we would need to incorporate more variables and perform feature engineering. In a scenario where model performance is of greater importance, I would have leaned toward using a gradient boosting model, or at the very least, a Lasso/Ridge regression.</p>
 </section>
 <section id="tldr" class="level1">
 <h1>TL;DR</h1>

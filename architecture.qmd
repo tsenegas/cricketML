@@ -15,22 +15,25 @@ format: html
 ## 2. Model Training
 
 -   Amazon SageMaker:
-    -   Train models using SageMaker's built-in resources.
-    -   Use a dedicated instance with 8 cores and large memory for the 8-hour training sessions.
+    -   Train models using SageMaker's built-in resources. (we could use an instance such as *ml.m54xlarge*):
+        - This instance has 8 vCPUs and 64 GB of memory, matching the requirements.
+    -   Data can be preprocessed or queried directly from Snowflake or Databricks for large-scale analytics.
     -   Store training metrics and artifacts in S3.
 
 ## 3. Model Prediction
 
 -   AWS Batch:
     -   Schedule batch jobs for overnight predictions (50 games/day).
-    -   Each game prediction requires a single CPU and 4 GB of memory for 60 minutes.
+    -   use an instance type *fargate* or *m5.large*:
+        - AWS Batch can scale horizontally to process multiple games concurrently.
     -   Use Compute Environment configurations to scale EC2 resources for optimal cost-efficiency.
+    - Predictions are stored back to Snowflake or S3 for downstream analysis.
 
 ## 4. Data Warehouse:
 
 -   Snowflake:
-    -   Store structured data (aggregated predictions, historical data) for analytical queries.
-    -   ntegration with S3 for seamless data loading and querying.
+    -   Store structured data (aggregated predictions, historical data) for analytical queries and reporting.
+    -   Integration with S3 for seamless data loading and querying.
 
 ## 5. MLOps and Model Monitoring
 
@@ -43,6 +46,7 @@ format: html
 ## 6. Visualization and Reporting
 
 -   R Shiny or Streamlit:
+    -   Connect R Shiny or Streamlit to Snowflake
     -   Deploy a visualization app to present model outputs, trends, and performance metrics.
     -   Host the app using a dockerized solution (shinyproxy works nicely)
 
